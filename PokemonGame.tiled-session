@@ -1,0 +1,43 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Map.tmx",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "Map.tmx": {
+            "scale": 2,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 253.25,
+                "y": 238.75
+            }
+        },
+        "Pokemon Style Game.tsx": {
+            "scaleInDock": 1.5,
+            "scaleInEditor": 5.5
+        }
+    },
+    "last.imagePath": "D:/HK2/DHUD/Project/Images",
+    "map.height": 40,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 12,
+    "map.tileWidth": 12,
+    "map.width": 70,
+    "openFiles": [
+        "Pokemon Style Game.tsx",
+        "Map.tmx"
+    ],
+    "project": "PokemonGame.tiled-project",
+    "recentFiles": [
+        "Pokemon Style Game.tsx",
+        "Map.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 12,
+        "width": 12
+    }
+}
