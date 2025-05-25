@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="70" height="40" tilewidth="12" tileheight="12" infinite="0" nextlayerid="28" nextobjectid="1">
- <tileset firstgid="1" source="tileset.tsx"/>
- <tileset firstgid="1025" source="Fences.tsx"/>
- <tileset firstgid="1050" source="../PokemonGame/Tiled/pokemonStyleGameTileset.tsx"/>
- <tileset firstgid="2074" source="../PokemonGame/Tiled/collisionTileset.tsx"/>
+ <tileset firstgid="1" source="../PokemonGame/Tiled/pokemonStyleGameTileset.tsx"/>
+ <tileset firstgid="1025" source="../PokemonGame/Tiled/collisionTileset.tsx"/>
  <layer id="3" name="Ocean" width="70" height="40">
   <data encoding="csv">
 439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,
