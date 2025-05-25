@@ -3,8 +3,8 @@
   <editorsettings>
   <export target="../../coast.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" source="../PokemonGame/Tiled/pokemonStyleGameTileset.tsx"/>
- <tileset firstgid="1025" source="../PokemonGame/Tiled/collisionTileset.tsx"/>
+ <tileset firstgid="1" source="pokemonStyleGameTileset.tsx"/>
+ <tileset firstgid="1025" source="collisionTileset.tsx"/>
  <layer id="3" name="Ocean" width="70" height="40">
   <data encoding="csv">
 439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,
