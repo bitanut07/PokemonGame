@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Game Map</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                background-color: #000;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="gameContainer"></div>
+        <!-- Load PIXI.js first -->
+        <script src="node_modules/pixi.js/dist/pixi.min.js"></script>
+
+        <!-- Load our game script -->
+        <script src="data/collisions.js"></script>
+
+        <script src="classes.js"></script>
+
+        <script type="module" src="script.js"></script>
+    </body>
+</html>
