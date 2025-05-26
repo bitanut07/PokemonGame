@@ -1,5 +1,4 @@
 // Player.js - Hỗ trợ nhiều hướng và animation tái sử dụng
-import { MapService } from './Map';
 
 export class PlayerService {
     constructor(app) {
@@ -21,27 +20,6 @@ export class PlayerService {
 
         // Hiển thị hướng mặc định
         this.switchDirection('down');
-
-        this.setupKeyboardControls();
-
-        this.app.ticker.add(() => {
-            if (this.moving && this.activeSprite) {
-                switch (this.currentDirection) {
-                    case 'down':
-                        this.activeSprite.y += this.speed;
-                        break;
-                    case 'up':
-                        this.activeSprite.y -= this.speed;
-                        break;
-                    case 'left':
-                        this.activeSprite.x -= this.speed;
-                        break;
-                    case 'right':
-                        this.activeSprite.x += this.speed;
-                        break;
-                }
-            }
-        });
 
         return this.playerLayer;
     }
@@ -88,41 +66,27 @@ export class PlayerService {
             this.activeSprite.play();
         }
     }
+    loadAnimation(name) {
+        this.activeSprite.play();
+    }
+    stopAnimation() {
+        //reset animation về frame đầu tiên
+        this.activeSprite.gotoAndStop(0);
+    }
 
-    setupKeyboardControls() {
-        window.addEventListener('keydown', e => {
-            switch (e.key) {
-                case 'ArrowDown':
-                    this.switchDirection('down');
-                    this.moving = true;
-                    break;
-                case 'ArrowUp':
-                    this.switchDirection('up');
-                    this.moving = true;
-                    break;
-                case 'ArrowLeft':
-                    this.switchDirection('left');
-                    this.moving = true;
-                    break;
-                case 'ArrowRight':
-                    this.switchDirection('right');
-                    this.moving = true;
-                    break;
-            }
-        });
-
-        window.addEventListener('keyup', e => {
-            if (
-                ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(
-                    e.key
-                )
-            ) {
-                this.moving = false;
-                if (this.activeSprite) {
-                    this.activeSprite.stop();
-                    this.activeSprite.gotoAndStop(0);
-                }
-            }
-        });
+    getPlayerPosition() {
+        if (this.activeSprite) {
+            return {
+                x: this.activeSprite.x,
+                y: this.activeSprite.y
+            };
+        }
+        return { x: 0, y: 0 };
+    }
+    getFrameHeight() {
+        return this.activeSprite?.height ?? 0;
+    }
+    getFrameWidth() {
+        return this.activeSprite?.width ?? 0;
     }
 }
