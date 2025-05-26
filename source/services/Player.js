@@ -10,6 +10,8 @@ export class PlayerService {
         this.activeSprite = null;
         this.moving = false;
         this.speed = 2;
+        this.battleZones = [];
+        this.battleCallback = null;
     }
 
     async loadPlayer() {
@@ -39,6 +41,22 @@ export class PlayerService {
                     case 'right':
                         this.activeSprite.x += this.speed;
                         break;
+                }
+
+                for (const zone of this.battleZones) {
+                    if (this.checkCollision(this.activeSprite, zone)) {
+                        if (Math.random() < 0.2) {
+                            console.log('Entering battle!');
+                            this.moving = false;
+                            if (this.activeSprite.stop) this.activeSprite.stop();
+                            if (this.activeSprite.gotoAndStop) this.activeSprite.gotoAndStop(0);
+
+                            if (this.battleCallback) {
+                                this.battleCallback(); // ✅ Gọi callback chuyển cảnh
+                            }
+                            break;
+                        }
+                    }
                 }
             }
         });
@@ -87,6 +105,26 @@ export class PlayerService {
         if (this.moving) {
             this.activeSprite.play();
         }
+    }
+
+    setBattleZones(zones) {
+        this.battleZones = zones;
+    }
+
+    setBattleCallback(callback) {
+        this.battleCallback = callback;
+    }
+
+    checkCollision(sprite1, sprite2) {
+        const rect1 = sprite1.getBounds();
+        const rect2 = sprite2.getBounds();
+
+        return (
+            rect1.x < rect2.x + rect2.width &&
+            rect1.x + rect1.width > rect2.x &&
+            rect1.y < rect2.y + rect2.height &&
+            rect1.y + rect1.height > rect2.y
+        );
     }
 
     setupKeyboardControls() {
