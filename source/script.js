@@ -2,6 +2,7 @@
 import * as PIXI from 'pixi.js';
 import { MapService } from './services/Map.js';
 import { PlayerService } from './services/Player.js';
+import { BattleService } from './services/Battle.js';
 
 const offset = {
     x: 1700,
@@ -14,6 +15,13 @@ for (let i = 0; i < collisions.length; i += 70) {
 }
 
 console.log(collisionMap);
+
+const battleZonesMap = [];
+for (let i = 0; i < battleZonesData.length; i += 70){
+    battleZonesMap.push(battleZonesData.slice(i, 70 + i))
+}
+
+console.log(battleZonesMap);
 
 async function initGame() {
     try {
@@ -48,9 +56,33 @@ async function initGame() {
             });
         });
 
+        // Lấy toạ độ vùng battle
+        const battleZones = []
+        battleZonesMap.forEach((row, i) => {
+            row.forEach((symbol, j) => {
+                if (symbol === 1025)
+                    battleZones.push(
+                        new Boundary({
+                            position: {
+                                x: j * Boundary.width + offset.x,
+                                y: i * Boundary.height + offset.y
+                            }
+                        })
+                )
+            })
+        })
+
         // Khởi tạo các services
         const mapService = new MapService(app);
         const playerService = new PlayerService(app);
+        const battleService = new BattleService(app);
+
+        // Load battle
+        playerService.setBattleZones(battleZones);
+        // Gán callback khi vào battle
+        playerService.setBattleCallback(() => {
+            battleService.startBattle();
+        });
 
         try {
             // Thêm các boundary vào stage
