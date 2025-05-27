@@ -1,11 +1,18 @@
 // Monster.js - Hỗ trợ hoạt động quái vật
 
 export class Monster {
-    constructor({ name, hp, attack, spriteSheet, imageSize, numFrames = 4, position }) {
+    constructor({ name, hp, attack, level = 1, spriteSheet, imageSize, numFrames = 4, position }) {
         this.name = name;
-        this.hp = hp;
-        this.maxHp = hp;
-        this.attack = attack;
+
+
+        // ⚡️ Tăng chỉ số theo cấp độ
+        this.maxHp = hp + (level - 1) * 20; // mỗi level +20 HP
+        this.hp = this.maxHp;
+
+        this.attack = attack + (level - 1) * 5; // mỗi level +5 damage
+
+        this.level = level; // ✅ THÊM DÒNG NÀY
+
         this.spriteSheet = spriteSheet;
 
         const frameWidth = imageSize.width / numFrames;
