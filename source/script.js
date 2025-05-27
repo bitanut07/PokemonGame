@@ -64,8 +64,8 @@ async function initGame() {
                     battleZones.push(
                         new Boundary({
                             position: {
-                                x: j * Boundary.width + offset.x,
-                                y: i * Boundary.height + offset.y
+                                x: j * Boundary.width + 100,
+                                y: i * Boundary.height - 490
                             }
                         })
                 )
@@ -75,14 +75,9 @@ async function initGame() {
         // Khởi tạo các services
         const mapService = new MapService(app);
         const playerService = new PlayerService(app);
-        const battleService = new BattleService(app);
+        // const battleService = new BattleService(app);
+        const battleService = new BattleService(app, playerService);
 
-        // Load battle
-        playerService.setBattleZones(battleZones);
-        // Gán callback khi vào battle
-        playerService.setBattleCallback(() => {
-            battleService.startBattle();
-        });
 
         try {
             // Thêm các boundary vào stage
@@ -90,9 +85,15 @@ async function initGame() {
                 app.stage.addChild(boundary);
                 console.log(boundary.x, boundary.y);
             });
+
             // Load map và thêm vào stage
             const mapLayer = await mapService.loadMap();
             app.stage.addChild(mapLayer);
+
+            // ĐÚNG: vùng battle nên là con của mapContainer để di chuyển cùng map
+            battleZones.forEach(zone => {
+                mapService.mapContainer.addChild(zone);
+            });
 
             // Thiết lập điều khiển cho map
             mapService.setupControls();
@@ -100,6 +101,15 @@ async function initGame() {
             // Load player và thêm vào stage
             const playerLayer = await playerService.loadPlayer();
             app.stage.addChild(playerLayer);
+
+            // Load battle
+            playerService.setBattleZones(battleZones);
+            // Gán callback khi vào battle
+            playerService.setBattleCallback(() => {
+                battleService.startBattle();
+            });
+
+
         } catch (error) {
             console.error('Error loading game assets:', error);
         }

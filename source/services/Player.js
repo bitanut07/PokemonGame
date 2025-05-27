@@ -12,6 +12,7 @@ export class PlayerService {
         this.speed = 2;
         this.battleZones = [];
         this.battleCallback = null;
+        this.inBattle = false;
     }
 
     async loadPlayer() {
@@ -45,14 +46,14 @@ export class PlayerService {
 
                 for (const zone of this.battleZones) {
                     if (this.checkCollision(this.activeSprite, zone)) {
-                        if (Math.random() < 0.2) {
-                            console.log('Entering battle!');
+                        console.log('Va chạm vùng đỏ');
+                        if (Math.random() < 1.0 && !this.inBattle) {
+                            this.inBattle = true;
                             this.moving = false;
-                            if (this.activeSprite.stop) this.activeSprite.stop();
-                            if (this.activeSprite.gotoAndStop) this.activeSprite.gotoAndStop(0);
-
+                            this.activeSprite.stop();
+                            this.activeSprite.gotoAndStop(0);
                             if (this.battleCallback) {
-                                this.battleCallback(); // ✅ Gọi callback chuyển cảnh
+                                this.battleCallback();
                             }
                             break;
                         }
@@ -115,15 +116,15 @@ export class PlayerService {
         this.battleCallback = callback;
     }
 
-    checkCollision(sprite1, sprite2) {
-        const rect1 = sprite1.getBounds();
-        const rect2 = sprite2.getBounds();
+    checkCollision(sprite1, zone) {
+        const p1 = sprite1.getGlobalBounds();
+        const p2 = zone.getGlobalBounds();
 
         return (
-            rect1.x < rect2.x + rect2.width &&
-            rect1.x + rect1.width > rect2.x &&
-            rect1.y < rect2.y + rect2.height &&
-            rect1.y + rect1.height > rect2.y
+            p1.x < p2.x + p2.width &&
+            p1.x + p1.width > p2.x &&
+            p1.y < p2.y + p2.height &&
+            p1.y + p1.height > p2.y
         );
     }
 
