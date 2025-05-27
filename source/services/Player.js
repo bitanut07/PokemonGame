@@ -23,27 +23,6 @@ export class PlayerService {
         // Hiển thị hướng mặc định
         this.switchDirection('down');
 
-        this.setupKeyboardControls();
-
-        this.app.ticker.add(() => {
-            if (this.moving && this.activeSprite) {
-                switch (this.currentDirection) {
-                    case 'down':
-                        this.activeSprite.y += this.speed;
-                        break;
-                    case 'up':
-                        this.activeSprite.y -= this.speed;
-                        break;
-                    case 'left':
-                        this.activeSprite.x -= this.speed;
-                        break;
-                    case 'right':
-                        this.activeSprite.x += this.speed;
-                        break;
-                }
-            }
-        });
-
         return this.playerLayer;
     }
 

@@ -20,32 +20,9 @@ async function initGame() {
         const gameContainer = document.getElementById('gameContainer');
         gameContainer.appendChild(app.canvas);
 
-        // Lấy toạ độ vùng battle
-        const battleZones = [];
-        battleZonesMap.forEach((row, i) => {
-            row.forEach((symbol, j) => {
-                if (symbol === 1025)
-                    battleZones.push(
-                        new Boundary({
-                            position: {
-                                x: j * Boundary.width + offset.x,
-                                y: i * Boundary.height + offset.y
-                            }
-                        })
-                    );
-            });
-        });
-
         // Khởi tạo các services
         const playerService = new PlayerService(app);
         const battleService = new BattleService(app);
-
-        // // Load battle
-        // playerService.setBattleZones(battleZones);
-        // // Gán callback khi vào battle
-        // playerService.setBattleCallback(() => {
-        //     battleService.startBattle();
-        // });
 
         const mapService = new MapService(app, playerService);
         const foregroundMap = await mapService.loadForegroundMap();
