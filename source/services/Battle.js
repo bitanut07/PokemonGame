@@ -130,21 +130,21 @@ export class BattleService {
 
             this.turnLocked = true; // ❌ Khoá thao tác
 
-            await this.playAttackEffect();
+            // await this.playAttackEffect();
+            await this.advanceAndAttack(this.playerMonster, this.enemyMonster, 'player');
 
             this.enemyMonster.hp -= this.playerMonster.attack;
             console.log(`💥 Enemy HP: ${this.enemyMonster.hp}`);
 
             if (this.enemyMonster.hp <= 0) {
-                await this.showVictoryBanner();
-                this.endBattle(); 
+                await this.showBattleBanner();
                 return;
             }
 
             // ✅ Gọi enemy phản đòn sau delay
             setTimeout(() => {
                 this.enemyAttack();
-            }, 700); // có thể tăng delay nếu muốn mượt hơn
+            }, 1500); // có thể tăng delay nếu muốn mượt hơn
         };
 
         // ====== Heal Button ======
@@ -190,7 +190,6 @@ export class BattleService {
         for (let i = 0; i < 4; i++) {
             const rect = new PIXI.Rectangle(i * (frameWidth / 4), 0, frameWidth / 4, frameHeight);
             const textureFrame = new PIXI.Texture({ source: baseTexture, frame: rect });
-            console.log(textureFrame);
             frames.push(textureFrame);
         }
 
@@ -201,8 +200,8 @@ export class BattleService {
         // effectSprite.play();
 
         // Bắt đầu từ playerMonster
-        effectSprite.x = this.playerMonster.sprite.x;
-        effectSprite.y = this.playerMonster.sprite.y;
+        effectSprite.x = this.playerMonster.sprite.x + 20;
+        effectSprite.y = this.playerMonster.sprite.y - 20;
 
         this.battleOverlay.addChild(effectSprite);
         effectSprite.play();
@@ -213,32 +212,134 @@ export class BattleService {
         const targetX = this.enemyMonster.sprite.x;
         const targetY = this.enemyMonster.sprite.y;
 
-        const duration = 500; // ms
+        const duration = 1000; // ms
         const startTime = performance.now();
 
-        const animate = (now) => {
-            const t = Math.min((now - startTime) / duration, 1);
+        // Trả Promise để chờ hiệu ứng kết thúc
+        return new Promise((resolve) => {
+            const animate = (now) => {
+                const t = Math.min((now - startTime) / duration, 1);
 
-            // Di chuyển tuyến tính
-            effectSprite.x = startX + (targetX - startX) * t;
-            effectSprite.y = startY + (targetY - startY) * t;
+                effectSprite.x = startX + (targetX - startX) * t;
+                effectSprite.y = startY + (targetY - startY) * t;
 
-            if (t < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                // Khi đến đích → bắt đầu phát animation rồi mới xoá
-                effectSprite.x = targetX;
-                effectSprite.y = targetY;
+                if (t < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Khi đến đích → xoá đòn đánh & gọi hiệu ứng nổ
+                    if (this.battleOverlay && effectSprite.parent) {
+                        this.battleOverlay.removeChild(effectSprite);
+                    }
+                    effectSprite.destroy();
 
-                if (this.battleOverlay && effectSprite.parent) {
-                    this.battleOverlay.removeChild(effectSprite);
+                    // Gọi hiệu ứng nổ tại vị trí enemy
+                    this.playExplosionEffect(targetX, targetY).then(() => {
+                        resolve(); // ✅ Tiếp tục sau khi nổ xong
+                    });
                 }
-                effectSprite.destroy();
-            }
-        };
+            };
 
-        requestAnimationFrame(animate);
+            requestAnimationFrame(animate);
+        });
     }
+
+    async advanceAndAttack(monster, target, attackerType = 'player') {
+        const sprite = monster.sprite;
+        const originalX = sprite.x;
+        const originalY = sprite.y;
+
+        const targetX = target.sprite.x;
+        const targetY = target.sprite.y;
+
+        const halfwayX = originalX + (targetX - originalX) / 2;
+        const halfwayY = originalY + (targetY - originalY) / 2;
+
+        const duration = 300;
+
+        // 👉 Di chuyển nửa đoạn đường
+        await new Promise((resolve) => {
+            const startTime = performance.now();
+            const animate = (now) => {
+                const t = Math.min((now - startTime) / duration, 1);
+                sprite.x = originalX + (halfwayX - originalX) * t;
+                sprite.y = originalY + (halfwayY - originalY) * t;
+                if (t < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    resolve();
+                }
+            };
+            requestAnimationFrame(animate);
+        });
+
+        // 👉 Gọi hiệu ứng tấn công đúng loại
+        if (attackerType === 'player') {
+            await this.playAttackEffect();
+        } else if (attackerType === 'enemy') {
+            await this.playEnemyAttackEffect();
+        }
+
+        // 👉 Quay lại chỗ cũ
+        await new Promise((resolve) => {
+            const returnStart = performance.now();
+            const animateReturn = (now) => {
+                const t = Math.min((now - returnStart) / duration, 1);
+                sprite.x = halfwayX + (originalX - halfwayX) * t;
+                sprite.y = halfwayY + (originalY - halfwayY) * t;
+                if (t < 1) {
+                    requestAnimationFrame(animateReturn);
+                } else {
+                    resolve();
+                }
+            };
+            requestAnimationFrame(animateReturn);
+        });
+    }
+
+    async playExplosionEffect(x, y) {
+        const texture = await PIXI.Assets.load('./Player_Pokemon/explosion.png');
+        const baseTexture = texture.baseTexture;
+
+        const frames = [];
+        const frameWidth = 188;
+        const frameHeight = 256;
+        const numFrames = 2;
+
+        for (let i = 0; i < numFrames; i++) {
+            const rect = new PIXI.Rectangle(0, i * (frameHeight / 2), frameWidth, frameHeight / 2);
+            const frameTexture = new PIXI.Texture({ source: baseTexture, frame: rect });
+            frames.push(frameTexture);
+        }
+
+        const explosion = new PIXI.AnimatedSprite(frames);
+        explosion.anchor.set(0.5);
+        explosion.x = x;
+        explosion.y = y;
+        explosion.animationSpeed = 0.15;
+        explosion.loop = true;
+
+        this.battleOverlay.addChild(explosion);
+
+        return new Promise((resolve) => {
+            let loops = 0;
+            const repeatCount = 3
+
+            explosion.onLoop = () => {
+                loops++;
+                if (loops >= repeatCount) {
+                    explosion.stop();
+                    if (explosion.parent) {
+                        this.battleOverlay.removeChild(explosion);
+                    }
+                    explosion.destroy();
+                    resolve(); // ✅ hoàn tất sau số vòng lặp
+                }
+            };
+
+            explosion.play();
+        });
+    }
+
 
     async enemyAttack() {
         if (!this.playerMonster) return;
@@ -246,14 +347,14 @@ export class BattleService {
         console.log('👾 Enemy attacks!');
         
         // 👇 Gọi animation bay tới player
-        await this.playEnemyAttackEffect();
+        await this.advanceAndAttack(this.enemyMonster, this.playerMonster, 'enemy');
+
 
         this.playerMonster.hp -= this.enemyMonster.attack;
         console.log(`💢 Player HP: ${this.playerMonster.hp}`);
 
         if (this.playerMonster.hp <= 0) {
-            await this.showDefeatBanner();
-            this.endBattle();
+            await this.showBattleBanner('defeat');
             return;
         }
 
@@ -281,18 +382,18 @@ export class BattleService {
         effectSprite.loop = true;
         effectSprite.anchor.set(0.5);
 
-        effectSprite.x = this.enemyMonster.sprite.x;
-        effectSprite.y = this.enemyMonster.sprite.y;
+        effectSprite.x = this.enemyMonster.sprite.x - 10;
+        effectSprite.y = this.enemyMonster.sprite.y + 10;
 
         this.battleOverlay.addChild(effectSprite);
         effectSprite.play();
 
         const startX = effectSprite.x;
         const startY = effectSprite.y;
-        const targetX = this.playerMonster.sprite.x;
-        const targetY = this.playerMonster.sprite.y;
+        const targetX = this.playerMonster.sprite.x + 20;
+        const targetY = this.playerMonster.sprite.y - 20;
 
-        const duration = 500;
+        const duration = 1000;
         const startTime = performance.now();
 
         return new Promise((resolve) => {
@@ -308,7 +409,11 @@ export class BattleService {
                         this.battleOverlay.removeChild(effectSprite);
                     }
                     effectSprite.destroy();
-                    resolve(); // ✅ hiệu ứng kết thúc
+
+                    // Gọi hiệu ứng nổ
+                    this.playExplosionEffect(targetX - 20, targetY + 20).then(() => {
+                        resolve();
+                    });
                 }
             };
 
@@ -316,11 +421,20 @@ export class BattleService {
         });
     }
 
-    async showVictoryBanner() {
+    async showBattleBanner(type = 'victory') {
         const texture = await PIXI.Assets.load('./Player_Pokemon/victory.png');
         const baseTexture = texture.baseTexture;
-        const frame = new PIXI.Rectangle(0, 0, baseTexture.width, baseTexture.height / 2);
-        const croppedTexture = new PIXI.Texture({ source: baseTexture, frame });
+
+        // Cắt phần ảnh theo type
+        const isVictory = type === 'victory';
+        const rect = new PIXI.Rectangle(
+            0,
+            isVictory ? 0 : baseTexture.height / 2,
+            baseTexture.width,
+            baseTexture.height / 2
+        );
+
+        const croppedTexture = new PIXI.Texture({ source: baseTexture, frame: rect });
         const sprite = new PIXI.Sprite(croppedTexture);
 
         sprite.anchor.set(0.5);
@@ -329,73 +443,24 @@ export class BattleService {
         sprite.scale.set(0.1);
         sprite.alpha = 0;
 
-        const battleOverlay = this.battleOverlay; // ✅ Dùng biến cục bộ an toàn
-        if (!battleOverlay) return; // ✅ Thêm kiểm tra phòng ngừa
+        const battleOverlay = this.battleOverlay;
+        if (!battleOverlay) return;
 
-        this.battleOverlay.addChild(sprite);
-
-        let start = performance.now();
-
-        const animate = (now) => {
-            const t = Math.min((now - start) / 500, 1);
-            const startScale = 0.1;
-            const endScale = 0.6;
-            const currentScale = startScale + (endScale - startScale) * t;
-
-            if (sprite && sprite.transform) {
-                sprite.scale.set(currentScale);
-                sprite.alpha = t;
-            }
-
-            if (t < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                setTimeout(() => {
-                    this.endBattle(); // ✅ Gọi ở đây luôn
-                }, 1500); // giữ 1.5s
-            }
-        };
-
-        requestAnimationFrame(animate);
-    }
-
-    async showDefeatBanner() {
-        const texture = await PIXI.Assets.load('./Player_Pokemon/victory.png');
-        const baseTexture = texture.baseTexture;
-        const frame = new PIXI.Rectangle(0, baseTexture.height / 2, baseTexture.width, baseTexture.height / 2);
-        const croppedTexture = new PIXI.Texture({ source: baseTexture, frame });
-        const sprite = new PIXI.Sprite(croppedTexture);
-
-        sprite.anchor.set(0.5);
-        sprite.x = this.app.canvas.width / 2;
-        sprite.y = this.app.canvas.height / 2;
-        sprite.scale.set(0.1);
-        sprite.alpha = 0;
-
-        const battleOverlay = this.battleOverlay; // ✅ Dùng biến cục bộ an toàn
-        if (!battleOverlay) return; // ✅ Thêm kiểm tra phòng ngừa
-
-        this.battleOverlay.addChild(sprite);
+        battleOverlay.addChild(sprite);
 
         let start = performance.now();
 
         const animate = (now) => {
             const t = Math.min((now - start) / 500, 1);
-            const startScale = 0.1;
-            const endScale = 0.6;
-            const currentScale = startScale + (endScale - startScale) * t;
-
-            if (sprite && sprite.transform) {
-                sprite.scale.set(currentScale);
-                sprite.alpha = t;
-            }
+            sprite.scale.set(0.1 + t * 0.5); // scale tối đa 0.6
+            sprite.alpha = t;
 
             if (t < 1) {
                 requestAnimationFrame(animate);
             } else {
                 setTimeout(() => {
-                    this.endBattle(); // ✅ Gọi ở đây luôn
-                }, 1500); // giữ 1.5s
+                    this.endBattle();
+                }, 1500);
             }
         };
 
