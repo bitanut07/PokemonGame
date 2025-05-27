@@ -1,5 +1,4 @@
 // Player.js - Hỗ trợ nhiều hướng và animation tái sử dụng
-import { MapService } from './Map';
 
 export class PlayerService {
     constructor(app) {
@@ -41,22 +40,6 @@ export class PlayerService {
                     case 'right':
                         this.activeSprite.x += this.speed;
                         break;
-                }
-
-                for (const zone of this.battleZones) {
-                    if (this.checkCollision(this.activeSprite, zone)) {
-                        if (Math.random() < 0.2) {
-                            console.log('Entering battle!');
-                            this.moving = false;
-                            if (this.activeSprite.stop) this.activeSprite.stop();
-                            if (this.activeSprite.gotoAndStop) this.activeSprite.gotoAndStop(0);
-
-                            if (this.battleCallback) {
-                                this.battleCallback(); // ✅ Gọi callback chuyển cảnh
-                            }
-                            break;
-                        }
-                    }
                 }
             }
         });
@@ -106,61 +89,27 @@ export class PlayerService {
             this.activeSprite.play();
         }
     }
-
-    setBattleZones(zones) {
-        this.battleZones = zones;
+    loadAnimation(name) {
+        this.activeSprite.play();
+    }
+    stopAnimation() {
+        //reset animation về frame đầu tiên
+        this.activeSprite.gotoAndStop(0);
     }
 
-    setBattleCallback(callback) {
-        this.battleCallback = callback;
+    getPlayerPosition() {
+        if (this.activeSprite) {
+            return {
+                x: this.activeSprite.x,
+                y: this.activeSprite.y
+            };
+        }
+        return { x: 0, y: 0 };
     }
-
-    checkCollision(sprite1, sprite2) {
-        const rect1 = sprite1.getBounds();
-        const rect2 = sprite2.getBounds();
-
-        return (
-            rect1.x < rect2.x + rect2.width &&
-            rect1.x + rect1.width > rect2.x &&
-            rect1.y < rect2.y + rect2.height &&
-            rect1.y + rect1.height > rect2.y
-        );
+    getFrameHeight() {
+        return this.activeSprite?.height ?? 0;
     }
-
-    setupKeyboardControls() {
-        window.addEventListener('keydown', e => {
-            switch (e.key) {
-                case 'ArrowDown':
-                    this.switchDirection('down');
-                    this.moving = true;
-                    break;
-                case 'ArrowUp':
-                    this.switchDirection('up');
-                    this.moving = true;
-                    break;
-                case 'ArrowLeft':
-                    this.switchDirection('left');
-                    this.moving = true;
-                    break;
-                case 'ArrowRight':
-                    this.switchDirection('right');
-                    this.moving = true;
-                    break;
-            }
-        });
-
-        window.addEventListener('keyup', e => {
-            if (
-                ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(
-                    e.key
-                )
-            ) {
-                this.moving = false;
-                if (this.activeSprite) {
-                    this.activeSprite.stop();
-                    this.activeSprite.gotoAndStop(0);
-                }
-            }
-        });
+    getFrameWidth() {
+        return this.activeSprite?.width ?? 0;
     }
 }
