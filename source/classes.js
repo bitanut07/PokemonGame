@@ -15,5 +15,8 @@ class Boundary extends PIXI.Graphics {
 
         this.x = position.x;
         this.y = position.y;
+
+        this.width = Boundary.width;
+        this.height = Boundary.height;
     }
 }
