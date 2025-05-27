@@ -10,27 +10,36 @@ export class BattleService {
         this.isActive = false;
     }
 
-    startBattle() {
-        this.isActive = true;
+    async startBattle() {
+        console.log('Chuyển sang màn hình chiến đấu (overlay)');
 
-        // Clear stage
-        this.app.stage.removeChildren();
+        const dimOverlay = new PIXI.Graphics();
+        dimOverlay.beginFill(0x000000, 0.5);
+        dimOverlay.drawRect(0, 0, this.app.view.width, this.app.view.height);
+        dimOverlay.endFill();
 
-        // Tạo UI đơn giản cho màn battle
-        const battleText = new PIXI.Text('BATTLE START!', {
-            fill: 'white',
-            fontSize: 48,
-            fontWeight: 'bold',
+        const battleScene = new PIXI.Container();
+
+        // ✅ Load ảnh battle từ thư mục Images
+        const battleTexture = await PIXI.Assets.load({
+            src: './Player_Pokemon/battleBackground.png',
+            data: { resourceOptions: { autoLoad: true } }
         });
-        battleText.anchor.set(0.5);
-        battleText.position.set(this.app.screen.width / 2, this.app.screen.height / 2);
-        this.battleContainer.addChild(battleText);
 
-        // Thêm container vào stage
-        this.app.stage.addChild(this.battleContainer);
+        const battleBackground = new PIXI.Sprite(battleTexture);
+        battleBackground.width = 480;
+        battleBackground.height = 320;
+        battleBackground.anchor.set(0.5);
+        battleBackground.x = this.app.view.width / 2;
+        battleBackground.y = this.app.view.height / 2;
 
-        console.log('Switched to battle scene');
+        battleScene.addChild(dimOverlay);
+        battleScene.addChild(battleBackground);
+
+        this.battleOverlay = battleScene;
+        this.app.stage.addChild(battleScene);
     }
+
 
     endBattle() {
         this.isActive = false;

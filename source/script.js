@@ -25,6 +25,7 @@ async function initGame() {
         const battleService = new BattleService(app);
 
         const mapService = new MapService(app, playerService);
+        mapService.battleService = battleService;
         const foregroundMap = await mapService.loadForegroundMap();
 
         try {
@@ -40,6 +41,20 @@ async function initGame() {
             // mapService.boundariesMap.forEach(boundary => {
             //     app.stage.addChild(boundary);
             // });
+
+            // Hiển thị overlay xanh dương để kiểm tra vị trí battle zone
+            // mapService.battleZones.forEach(zone => {
+            //     const debugOverlay = new PIXI.Graphics();
+            //     debugOverlay.beginFill(0xf00000);
+            //     debugOverlay.drawRect(0, 0, 48, 48);
+            //     debugOverlay.endFill();
+            //     debugOverlay.x = zone.x;
+            //     debugOverlay.y = zone.y;
+
+            //     // Thêm vào cùng mapContainer để di chuyển theo bản đồ
+            //     mapService.mapContainer.addChild(debugOverlay);
+            // });
+
             app.stage.addChild(playerLayer);
             app.stage.addChild(foregroundMap);
 

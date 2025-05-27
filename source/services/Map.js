@@ -25,6 +25,30 @@ collisionMap.forEach((row, i) => {
     });
 });
 
+const battleZonesMap = [];
+for (let i = 0; i < battleZonesData.length; i += 70) {
+    battleZonesMap.push(battleZonesData.slice(i, i + 70));
+}
+console.log(battleZonesMap);
+
+//Lấy tọa độ của battleZones map 1
+const battleZones = [];
+
+battleZonesMap.forEach((row, i) => {
+    row.forEach((symbol, j) => {
+        if (symbol === 1025) {
+            battleZones.push(
+                new Boundary({
+                    position: {
+                        x: j * Boundary.width + 100,
+                        y: i * Boundary.height - 540
+                    },
+                })
+            );
+        }
+    });
+});
+
 export class MapService {
     boundariesMap = boundaries;
     constructor(app, playerService) {
@@ -35,6 +59,11 @@ export class MapService {
         this.mapLayer.addChild(this.mapContainer);
         this.foregroundMap = new PIXI.Container();
         this.mapLayer.addChild(this.foregroundMap);
+        this.battleZones = battleZones;
+        this.battleZones.forEach(zone => {
+            this.mapContainer.addChild(zone);
+        });
+        this.currentBattleZone = null; // Theo dõi vùng battle hiện tại
     }
 
     async loadMap() {
@@ -155,6 +184,11 @@ export class MapService {
 
             let canMove = true;
 
+            if (this.playerService.inBattle) {
+                requestAnimationFrame(moveMap);
+                return; // ❌ Không cho di chuyển nếu đang chiến đấu
+            }
+
             if (keys.w.pressed) {
                 // Kiểm tra collision trước khi di chuyển
                 for (let i = 0; i < this.boundariesMap.length; i++) {
@@ -184,6 +218,7 @@ export class MapService {
                     this.playerService.switchDirection('up');
                     //load animation
                     this.playerService.loadAnimation('up');
+                    this.checkBattleZoneCollision(player);
                 }
             } else if (keys.a.pressed) {
                 // Tương tự cho các hướng khác
@@ -214,6 +249,7 @@ export class MapService {
                     this.playerService.switchDirection('left');
                     //load animation
                     this.playerService.loadAnimation('left');
+                    this.checkBattleZoneCollision(player);
                 }
             } else if (keys.d.pressed) {
                 for (let i = 0; i < this.boundariesMap.length; i++) {
@@ -243,6 +279,7 @@ export class MapService {
                     this.playerService.switchDirection('right');
                     //load animation
                     this.playerService.loadAnimation('right');
+                    this.checkBattleZoneCollision(player);
                 }
             } else if (keys.s.pressed) {
                 for (let i = 0; i < this.boundariesMap.length; i++) {
@@ -272,6 +309,7 @@ export class MapService {
                     this.playerService.switchDirection('down');
                     //load animation
                     this.playerService.loadAnimation('down');
+                    this.checkBattleZoneCollision(player);
                 }
             }
 
@@ -280,4 +318,75 @@ export class MapService {
 
         moveMap();
     }
+
+    checkBattleZoneCollision(player) {
+        let enteredZone = false;
+
+        for (const zone of this.battleZones) {
+            const zoneX = zone.x + this.mapContainer.x;
+            const zoneY = zone.y + this.mapContainer.y;
+
+            const overlapX = Math.max(
+                0,
+                Math.min(player.x + player.width, zoneX + zone.width) -
+                Math.max(player.x, zoneX)
+            );
+            const overlapY = Math.max(
+                0,
+                Math.min(player.y + player.height, zoneY + zone.height) -
+                Math.max(player.y, zoneY)
+            );
+            const overlapArea = overlapX * overlapY;
+            const playerArea = player.width * player.height;
+            const overlapRatio = overlapArea / playerArea;
+
+            if (overlapRatio >= 0.5) {
+                if (this.currentBattleZone !== zone) {
+                    // Mới bước vào vùng battle zone
+                    this.currentBattleZone = zone;
+                    enteredZone = true;
+                }
+                break;
+            }
+        }
+
+        // Nếu vừa mới bước vào vùng mới => kiểm tra xác suất
+        if (enteredZone && !this.playerService.inBattle) {
+            const chance = Math.random(); // [0, 1]
+            const battleChance = 0.1;     // 10% xác suất vào trận
+
+            console.log(`Đã vào vùng mới. Tỉ lệ random: ${chance.toFixed(2)}`);
+
+            if (chance < battleChance) {
+                console.log('Tiến vào trận chiến!');
+                this.playerService.inBattle = true;
+                this.playerService.stopAnimation();
+                if (this.battleService) this.battleService.startBattle();
+            } else {
+                console.log('Không gặp trận chiến.');
+            }
+        }
+
+        // Nếu không còn nằm trong battle zone nào, reset current zone
+        if (!this.battleZones.some(zone => {
+            const zoneX = zone.x + this.mapContainer.x;
+            const zoneY = zone.y + this.mapContainer.y;
+            const overlapX = Math.max(
+                0,
+                Math.min(player.x + player.width, zoneX + zone.width) -
+                Math.max(player.x, zoneX)
+            );
+            const overlapY = Math.max(
+                0,
+                Math.min(player.y + player.height, zoneY + zone.height) -
+                Math.max(player.y, zoneY)
+            );
+            return (overlapX * overlapY) / (player.width * player.height) >= 0.5;
+        })) {
+            this.currentBattleZone = null;
+        }
+    }
+
+
+
 }
