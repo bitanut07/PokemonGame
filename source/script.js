@@ -25,25 +25,22 @@ async function initGame() {
         const battleService = new BattleService(app);
 
         const mapService = new MapService(app, playerService);
-        const foregroundMap = await mapService.loadForegroundMap();
 
         try {
-            // Load player trước
+            // Load player
             const playerLayer = await playerService.loadPlayer();
-            app.stage.addChild(playerLayer);
 
-            // Sau đó load map và thiết lập controls
+            // Load map đúng thứ tự
             const mapLayer = await mapService.loadMap();
-            app.stage.addChild(mapLayer);
+            const foregroundMap = await mapService.loadForegroundMap();
 
-            // //Hien boundaries
-            // mapService.boundariesMap.forEach(boundary => {
-            //     app.stage.addChild(boundary);
-            // });
+            // Thêm vào stage theo thứ tự
+            app.stage.addChild(mapLayer);
             app.stage.addChild(playerLayer);
+
             app.stage.addChild(foregroundMap);
 
-            // Thiết lập điều khiển cho map sau khi player đã được load
+            // Setup điều khiển
             mapService.setupControls();
         } catch (error) {
             console.error('Error loading game assets:', error);
