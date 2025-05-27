@@ -27,9 +27,62 @@
         <!-- Load our game script -->
         <script src="data/collisions.js"></script>
 
+        <button id="endBattleButton" style="
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #ff5555;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 10;
+            display: none; /* Ẩn ban đầu, chỉ hiện khi đang battle */
+        ">
+            End Battle
+        </button>
         <script src="classes.js"></script>
         <script type="module" src="js/utils.js"></script>
 
         <script type="module" src="script.js"></script>
+        
+        <!-- Info Box cho Player -->
+        <!-- Info Box cho Player -->
+        <div id="playerInfoBox" style="
+            position: absolute;
+            bottom: 120px;
+            left: 30px;
+            width: 180px;
+            background-color: white;
+            border: 2px solid black;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            display: none;
+            z-index: 20;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        "></div>
+
+        <!-- Info Box cho Enemy -->
+        <div id="enemyInfoBox" style="
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 180px;
+            background-color: white;
+            border: 2px solid black;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            display: none;
+            z-index: 20;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        "></div>
     </body>
 </html>

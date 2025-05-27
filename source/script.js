@@ -3,6 +3,7 @@ import * as PIXI from 'pixi.js';
 import { MapService } from './services/Map.js';
 import { PlayerService } from './services/Player.js';
 import { BattleService } from './services/Battle.js';
+// import { Monster } from '.services/Monster.js'
 
 async function initGame() {
     try {
@@ -22,7 +23,8 @@ async function initGame() {
 
         // Khởi tạo các services
         const playerService = new PlayerService(app);
-        const battleService = new BattleService(app);
+        const battleService = new BattleService(app, playerService);
+        window.battleService = battleService;
 
         const mapService = new MapService(app, playerService);
         mapService.battleService = battleService;
@@ -57,6 +59,13 @@ async function initGame() {
 
             app.stage.addChild(playerLayer);
             app.stage.addChild(foregroundMap);
+
+            document.getElementById('endBattleButton').addEventListener('click', () => {
+                // Giả sử bạn đã có `battleService` là một biến toàn cục hoặc truy cập được
+                if (window.battleService && battleService.isActive) {
+                    battleService.endBattle();
+                }
+            });
 
             // Thiết lập điều khiển cho map sau khi player đã được load
             mapService.setupControls();
