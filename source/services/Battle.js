@@ -47,7 +47,7 @@ export class BattleService {
     }
 
     // Bắt đầu trận chiến
-    async startBattle() {
+    async startBattle(mapNumber = 1) {
         this.isActive = true; // Đánh dấu đang battle
         document.getElementById('endBattleButton').style.display = 'block';
 
@@ -107,8 +107,20 @@ export class BattleService {
         const baseTextureEnemy = await PIXI.Assets.load('./Player_Pokemon/draggleSprite.png');
         const sourceTextureEnemy = baseTextureEnemy.baseTexture;
 
-        // Level ngẫu nhiên
-        const enemyLevel = Math.floor(Math.random() * 3) + 1;
+        let enemyLevel;
+        switch (mapNumber) {
+            case 1:
+                enemyLevel = Math.floor(Math.random() * 3) + 1; // 1–3
+                break;
+            case 2:
+                enemyLevel = Math.floor(Math.random() * 3) + 7; // 4–6
+                break;
+            case 3:
+                enemyLevel = Math.floor(Math.random() * 3) + 15; // 7–9
+                break;
+            default:
+                enemyLevel = 1;
+        }
 
         // Thiết lập enemy monster
         this.enemyMonster = new Monster({

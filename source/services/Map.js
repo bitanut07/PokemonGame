@@ -566,7 +566,7 @@ export class MapService {
                 console.log('Tiến vào trận chiến!');
                 this.playerService.inBattle = true;
                 this.playerService.stopAnimation();
-                if (this.battleService) this.battleService.startBattle();
+                if (this.battleService) this.battleService.startBattle(this.numberMap);
             } else {
                 console.log('Không gặp trận chiến.');
             }
