@@ -45,10 +45,10 @@
         },
         "Tiled/Coast.tmx": {
             "scale": 1.6048214285714284,
-            "selectedLayer": 0,
+            "selectedLayer": 15,
             "viewCenter": {
-                "x": 420.2959830866808,
-                "y": 240.21364192722828
+                "x": 319.661733615222,
+                "y": 163.56960053410486
             }
         },
         "Tiled/Forest.tmx": {
@@ -56,9 +56,9 @@
                 43
             ],
             "scale": 2,
-            "selectedLayer": 38,
+            "selectedLayer": 40,
             "viewCenter": {
-                "x": 420.25,
+                "x": 516,
                 "y": 240.25
             }
         },

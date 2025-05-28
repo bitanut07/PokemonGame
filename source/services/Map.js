@@ -13,24 +13,6 @@ import {
     collisionsMap03
 } from '../data/inforAllMap.js';
 
-//Lấy tọa độ của collision map 1
-// const boundaries = [];
-
-// collisionMap.forEach((row, i) => {
-//     row.forEach((symbol, j) => {
-//         if (symbol === 1025) {
-//             boundaries.push(
-//                 new Boundary({
-//                     position: {
-//                         x: j * Boundary.width + 100,
-//                         y: i * Boundary.height - 540
-//                     }
-//                 })
-//             );
-//         }
-//     });
-// });
-
 export class MapService {
     originalBoundariesMap;
     originalGatesMap;
@@ -314,15 +296,15 @@ export class MapService {
 
             let canMove = true;
 
-            if (this.playerService.inBattle) {
-                requestAnimationFrame(moveMap);
-                return; // ❌ Không cho di chuyển nếu đang chiến đấu
-            }
+            // if (this.playerService.inBattle) {
+            //     requestAnimationFrame(moveMap);
+            //     return; // ❌ Không cho di chuyển nếu đang chiến đấu
+            // }
 
-            if (this.playerService.inBattle) {
-                requestAnimationFrame(moveMap);
-                return; // ❌ Không cho di chuyển nếu đang chiến đấu
-            }
+            // if (this.playerService.inBattle) {
+            //     requestAnimationFrame(moveMap);
+            //     return; // ❌ Không cho di chuyển nếu đang chiến đấu
+            // }
 
             // Kiểm tra va chạm với cổng
             for (

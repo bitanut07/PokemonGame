@@ -32,24 +32,6 @@ for (let i = 0; i < gateMap1.length; i += 70) {
     gatesMap1.push(gateMap1.slice(i, i + 70));
 }
 
-// //Lấy tọa độ của collision map 1 phan 1
-// const boundaries = [];
-
-// collisionMap.forEach((row, i) => {
-//     row.forEach((symbol, j) => {
-//         if (symbol === 1025 || symbol === 1026) {
-//             boundaries.push(
-//                 new Boundary({
-//                     position: {
-//                         x: j * Boundary.width + offset.map1p1.x,
-//                         y: i * Boundary.height + offset.map1p1.y
-//                     }
-//                 })
-//             );
-//         }
-//     });
-// });
-
 const createBoundary = (map, offset) => {
     const boundaries = [];
     map.forEach((row, i) => {
@@ -87,27 +69,6 @@ const createGate = (map, offset) => {
     });
     return gates;
 };
-
-// const createBoundary1 = () => {
-//     //Lấy tọa độ của collision map 1 phan 1
-//     const boundaries = [];
-
-//     collisionMap.forEach((row, i) => {
-//         row.forEach((symbol, j) => {
-//             if (symbol === 1025 || symbol === 1026) {
-//                 boundaries.push(
-//                     new Boundary({
-//                         position: {
-//                             x: j * Boundary.width + offset.map1p1.x,
-//                             y: i * Boundary.height + offset.map1p1.y
-//                         }
-//                     })
-//                 );
-//             }
-//         });
-//     });
-//     return boundaries;
-// };
 
 //collision map 2
 const collisionsMap02 = [];

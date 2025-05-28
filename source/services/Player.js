@@ -9,8 +9,8 @@ export class PlayerService {
         this.activeSprite = null;
         this.moving = false;
         this.speed = 2;
-        this.battleZones = [];
-        this.battleCallback = null;
+        // this.battleZones = [];
+        // this.battleCallback = null;
     }
 
     async loadPlayer() {
