@@ -30,7 +30,7 @@ export class BattleService {
         this.playerMonster = new Monster({
             name: 'Hello',
             hp: 100,
-            attack: 50,
+            attack: 150,
             level: 1,
             spriteSheet: sourceTexturePlayer,
             imageSize: { width: 344, height: 89 },
@@ -44,27 +44,6 @@ export class BattleService {
 
         // Tỷ lệ Monster
         this.playerMonster.sprite.scale.set(1.2);
-    }
-
-    // Chuyển cảnh battle
-    async transitionIn() {
-        return new Promise((resolve) => {
-            const duration = 600;
-            const start = performance.now();
-
-            const animate = (now) => {
-                const t = Math.min((now - start) / duration, 1);
-                this.app.stage.alpha = 1 - 0.8 * t; // fade từ 1 → 0.2
-
-                if (t < 1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    resolve();
-                }
-            };
-
-            requestAnimationFrame(animate);
-        });
     }
 
     // Bắt đầu trận chiến
@@ -105,10 +84,12 @@ export class BattleService {
         this.effectService = new BattleEffectService(this.app, this.battleOverlay);
 
         // Hiệu ứng chuyển cảnh
-        await this.transitionIn();
+        // await this.transitionIn();
+        await this.effectService.transitionIn(this.app.stage);
         this.battleOverlay = battleScene;
         this.app.stage.addChild(battleScene);
-        await this.fadeInScene(battleScene);
+        // await this.fadeInScene(battleScene);
+        await this.effectService.fadeInScene(this.battleOverlay);
         this.app.stage.alpha = 1;
 
         // Vị trí Player Monster
@@ -154,30 +135,6 @@ export class BattleService {
 
         // Thao tác chiến đấu
         this.addBattleControls();
-    }
-
-    // Làm mờ màn hình
-    async fadeInScene(scene) {
-        scene.alpha = 0;
-
-        return new Promise((resolve) => {
-            const duration = 500;
-            const start = performance.now();
-
-            const animate = (now) => {
-                const t = Math.min((now - start) / duration, 1);
-                scene.alpha = t;
-
-                if (t < 1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    scene.alpha = 1; // 👈 Ép alpha về đúng 1
-                    resolve();
-                }
-            };
-
-            requestAnimationFrame(animate);
-        });
     }
 
     // Khởi tạo mũi tên chỉ định turn arrow
@@ -361,7 +318,7 @@ export class BattleService {
 
             if (this.enemyMonster.hp <= 0) {
                 await this.knockOutMonster(this.enemyMonster);
-                this.gainExp(this.playerMonster, this.enemyMonster.level);
+                await this.gainExp(this.playerMonster, this.enemyMonster.level);
                 await this.showBattleBanner();
                 return;
             }
@@ -413,17 +370,24 @@ export class BattleService {
     }
 
     // Nhận EXP
-    gainExp(monster, enemyLevel) {
+    async gainExp(monster, enemyLevel) {
         const gainedExp = 20 + enemyLevel * 10;
         monster.exp += gainedExp;
 
         console.log(`✨ ${monster.name} gained ${gainedExp} EXP!`);
 
-        // Cập nhật lại thông tin hiển thị của player
+        // Cập nhật giao diện
         this.updateMonsterInfo(monster, false);
 
         if (monster.exp >= monster.expToNextLevel) {
-            this.levelUp(monster);
+            monster.exp -= monster.expToNextLevel;
+            monster.level++;
+            monster.expToNextLevel += 50;
+
+            this.updateMonsterInfo(monster, false);
+
+            // 💥 Hiệu ứng level up, rồi mới tới banner
+            await this.effectService.playLevelUpEffect(monster, this.battleOverlay);
         }
     }
 
@@ -560,26 +524,6 @@ export class BattleService {
         this.turnLocked = false;
     }
 
-    // Nhấp nháy thanh HP
-    blinkHpBar(barSprite) {
-        const originalAlpha = barSprite.alpha;
-        const blinkTimes = 6;
-        const interval = 100;
-        let count = 0;
-
-        return new Promise((resolve) => {
-            const blink = setInterval(() => {
-                barSprite.alpha = barSprite.alpha === 1 ? 0.3 : 1;
-                count++;
-                if (count >= blinkTimes) {
-                    clearInterval(blink);
-                    barSprite.alpha = originalAlpha;
-                    resolve();
-                }
-            }, interval);
-        });
-    }
-
     // Thao tác tấn công
     async advanceAndAttack(monster, target, attackerType = 'player') {
         const sprite = monster.sprite;
@@ -643,7 +587,8 @@ export class BattleService {
             this.enemyMonster.hp -= this.playerMonster.attack;
             this.updateHpBar(this.enemyMonster, this.enemyHpBar);
             this.updateMonsterInfo(this.enemyMonster, true);
-            await this.blinkHpBar(this.enemyHpBar);
+            // await this.blinkHpBar(this.enemyHpBar);
+            await this.effectService.blinkHpBar(this.enemyHpBar);
 
         } else if (attackerType === 'enemy') {
             await this.effectService.playAttackEffect({
@@ -659,7 +604,8 @@ export class BattleService {
             this.playerMonster.hp -= this.enemyMonster.attack;
             this.updateHpBar(this.playerMonster, this.playerHpBar);
             this.updateMonsterInfo(this.playerMonster, false);
-            await this.blinkHpBar(this.playerHpBar);
+            // await this.blinkHpBar(this.playerHpBar);
+            await this.effectService.blinkHpBar(this.playerHpBar);
         }
 
         // Quay lại vị trí ban đầu

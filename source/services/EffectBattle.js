@@ -4,6 +4,7 @@ export class BattleEffectService {
         this.battleOverlay = battleOverlay;
     }
 
+    // Heal effect
     async playHealEffect(monster, isPlayer = true, battleOverlay) {
         const texture = await PIXI.Assets.load('./Player_Pokemon/healing.png');
         const sprite = new PIXI.Sprite(texture);
@@ -38,6 +39,7 @@ export class BattleEffectService {
         });
     }
 
+    // Explosion effect
     async playExplosionEffect(x, y, battleOverlay) {
         const texture = await PIXI.Assets.load('./Player_Pokemon/explosion.png');
         const baseTexture = texture.baseTexture;
@@ -76,6 +78,7 @@ export class BattleEffectService {
         });
     }
 
+    // Attack effect
     async playAttackEffect({ from, to, texturePath, frameSize, numFrames, battleOverlay }) {
         const texture = await PIXI.Assets.load(texturePath);
         const baseTexture = texture.baseTexture;
@@ -127,5 +130,131 @@ export class BattleEffectService {
         });
     }
 
+    // Hp effect blink
+    async blinkHpBar(barSprite) {
+        const originalAlpha = barSprite.alpha;
+        const blinkTimes = 6;
+        const interval = 100;
+        let count = 0;
 
+        return new Promise((resolve) => {
+            const blink = setInterval(() => {
+                barSprite.alpha = barSprite.alpha === 1 ? 0.3 : 1;
+                count++;
+                if (count >= blinkTimes) {
+                    clearInterval(blink);
+                    barSprite.alpha = originalAlpha;
+                    resolve();
+                }
+            }, interval);
+        });
+    }
+
+    // Hiệu ứng chuyển cảnh khi bắt đầu battle
+    async transitionIn(stage) {
+        return new Promise((resolve) => {
+            const duration = 600;
+            const start = performance.now();
+
+            const animate = (now) => {
+                const t = Math.min((now - start) / duration, 1);
+                stage.alpha = 1 - 0.8 * t;
+
+                if (t < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    resolve();
+                }
+            };
+
+            requestAnimationFrame(animate);
+        });
+    }
+
+    // Hiệu ứng làm mờ vào cảnh
+    async fadeInScene(scene) {
+        scene.alpha = 0;
+
+        return new Promise((resolve) => {
+            const duration = 500;
+            const start = performance.now();
+
+            const animate = (now) => {
+                const t = Math.min((now - start) / duration, 1);
+                scene.alpha = t;
+
+                if (t < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    scene.alpha = 1;
+                    resolve();
+                }
+            };
+
+            requestAnimationFrame(animate);
+        });
+    }
+
+    // Hiệu ứng lên cấp (Level Up)
+    async playLevelUpEffect(monster, battleOverlay) {
+        // Load assets
+        const texture = await PIXI.Assets.load('./Player_Pokemon/level_up.png');
+        const baseTexture = texture.baseTexture;
+
+        // Thiết lập kích thước
+        const frameWidth = 56;
+        const frameHeight = 76;
+        const numFrames = 1;
+
+        const frames = [];
+        for (let i = 0; i < numFrames; i++) {
+            const rect = new PIXI.Rectangle(i * frameWidth, 0, frameWidth, frameHeight);
+            const frameTexture = new PIXI.Texture({ source: baseTexture, frame: rect });
+            frames.push(frameTexture);
+        }
+
+        const levelUpSprite = new PIXI.AnimatedSprite(frames);
+        levelUpSprite.anchor.set(0.5);
+        levelUpSprite.animationSpeed = 0.2;
+        levelUpSprite.loop = true;
+
+        levelUpSprite.x = monster.sprite.x;
+        const startY = monster.sprite.y - 30;
+        levelUpSprite.y = startY;
+        levelUpSprite.scale.set(0.8);
+        levelUpSprite.alpha = 1;
+
+        battleOverlay.addChild(levelUpSprite);
+        levelUpSprite.play();
+
+        return new Promise((resolve) => {
+            const duration = 1500;
+            const startTime = performance.now();
+
+            const animate = (now) => {
+                const t = Math.min((now - startTime) / duration, 1);
+
+                // Nhấp nháy (alpha)
+                levelUpSprite.alpha = Math.sin(t * 10 * Math.PI) > 0 ? 1 : 0.3;
+
+                // Phóng to nhẹ
+                const scale = 0.8 + 0.4 * t;
+                levelUpSprite.scale.set(scale);
+
+                // Di chuyển lên trên
+                levelUpSprite.y = startY - 30 * t;
+
+                if (t < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    levelUpSprite.stop();
+                    battleOverlay.removeChild(levelUpSprite);
+                    levelUpSprite.destroy();
+                    resolve();
+                }
+            };
+
+            requestAnimationFrame(animate);
+        });
+    }
 }
