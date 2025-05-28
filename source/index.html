@@ -28,25 +28,6 @@
         <script src="data/collisions.js"></script>
         <script src="data/gate.js"></script>
 
-        <button
-            id="endBattleButton"
-            style="
-                position: absolute;
-                bottom: 40px;
-                right: 40px;
-                padding: 12px 24px;
-                font-size: 16px;
-                background-color: #ff5555;
-                color: white;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                z-index: 10;
-                display: none; /* Ẩn ban đầu, chỉ hiện khi đang battle */
-            "
-        >
-            End Battle
-        </button>
         <script src="classes.js"></script>
         <script type="module" src="data/inforAllMap.js"></script>
 
@@ -54,7 +35,6 @@
 
         <script type="module" src="script.js"></script>
 
-        <!-- Info Box cho Player -->
         <!-- Info Box cho Player -->
         <div
             id="playerInfoBox"
@@ -96,5 +76,64 @@
                 box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
             "
         ></div>
+
+        <div id="battleControlBar" style="
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 20;
+            display: none;
+        ">
+            <button id="attackBtn" class="battle-btn">Attack</button>
+            <button id="healBtn" class="battle-btn">Heal</button>
+            <button id="endBattleBtn" class="battle-btn">End Battle</button>
+        </div>
+
+        <style>
+            .battle-btn {
+                padding: 10px 20px;
+                font-size: 16px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-family: Arial, sans-serif;
+                box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+                transition: all 0.2s ease;
+                margin: 0 8px;
+            }
+
+            #attackBtn {
+                background-color: #e53935; /* Đỏ đậm */
+                color: white;
+                border: none;
+            }
+
+            #attackBtn:hover {
+                background-color: #c62828;
+            }
+
+            #healBtn {
+                background-color: #81c784; /* Xanh lá nhạt */
+                color: white;
+                border: none;
+            }
+
+            #healBtn:hover {
+                background-color: #66bb6a;
+            }
+
+            #endBattleBtn {
+                background-color: white;
+                border: 2px solid black;
+                color: black;
+            }
+
+            #endBattleBtn:hover {
+                background-color: #f0f0f0;
+            }
+        </style>
+
     </body>
 </html>

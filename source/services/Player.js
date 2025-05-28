@@ -15,10 +15,10 @@ export class PlayerService {
 
     async loadPlayer() {
         // Load tất cả hướng
-        await this.loadDirection('down', './Player_Pokemon/playerDown.png');
-        await this.loadDirection('up', './Player_Pokemon/playerUp.png');
-        await this.loadDirection('left', './Player_Pokemon/playerLeft.png');
-        await this.loadDirection('right', './Player_Pokemon/playerRight.png');
+        await this.loadDirection('down', './Player_Pokemon/Object/playerDown.png');
+        await this.loadDirection('up', './Player_Pokemon/Object/playerUp.png');
+        await this.loadDirection('left', './Player_Pokemon/Object/playerLeft.png');
+        await this.loadDirection('right', './Player_Pokemon/Object/playerRight.png');
 
         // Hiển thị hướng mặc định
         this.switchDirection('down');

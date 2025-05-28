@@ -45,24 +45,6 @@ async function initGame() {
 
             app.stage.addChild(foregroundMap);
 
-            document
-                .getElementById('endBattleButton')
-                .addEventListener('click', () => {
-                    // Giả sử bạn đã có `battleService` là một biến toàn cục hoặc truy cập được
-                    if (window.battleService && battleService.isActive) {
-                        battleService.endBattle();
-                    }
-                });
-
-            document
-                .getElementById('endBattleButton')
-                .addEventListener('click', () => {
-                    // Giả sử bạn đã có `battleService` là một biến toàn cục hoặc truy cập được
-                    if (window.battleService && battleService.isActive) {
-                        battleService.endBattle();
-                    }
-                });
-
             // Setup điều khiển
             mapService.setupControls();
         } catch (error) {

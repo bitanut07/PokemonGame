@@ -6,7 +6,7 @@ export class BattleEffectService {
 
     // Heal effect
     async playHealEffect(monster, isPlayer = true, battleOverlay) {
-        const texture = await PIXI.Assets.load('./Player_Pokemon/healing.png');
+        const texture = await PIXI.Assets.load('./Player_Pokemon/Effect/healing.png');
         const sprite = new PIXI.Sprite(texture);
 
         sprite.anchor.set(0.5);
@@ -39,17 +39,41 @@ export class BattleEffectService {
         });
     }
 
-    // Explosion effect
-    async playExplosionEffect(x, y, battleOverlay) {
-        const texture = await PIXI.Assets.load('./Player_Pokemon/explosion.png');
+    // Explosion effect (tùy loại: 'player' hoặc 'enemy')
+    async playExplosionEffect(x, y, battleOverlay, type = 'player') {
+        // 🔁 Phân nhánh ảnh và cấu hình từng loại
+        let texturePath, frameWidth, frameHeight, numFrames;
+
+        if (type === 'player') {
+            texturePath = './Player_Pokemon/Effect/explosion_fire.png';
+            frameWidth = 96;
+            frameHeight = 96;
+            numFrames = 12;
+        } else {
+            texturePath = './Player_Pokemon/Effect/explosion_wind.png';
+            frameWidth = 96;
+            frameHeight = 96;
+            numFrames = 12;
+        }
+
+        const texture = await PIXI.Assets.load(texturePath);
         const baseTexture = texture.baseTexture;
 
         const frames = [];
-        const frameWidth = 188;
-        const frameHeight = 256;
 
-        for (let i = 0; i < 2; i++) {
-            const rect = new PIXI.Rectangle(0, i * (frameHeight / 2), frameWidth, frameHeight / 2);
+        const numColumns = Math.floor(baseTexture.width / frameWidth);
+
+        for (let i = 0; i < numFrames; i++) {
+            const col = i % numColumns;                    // cột hiện tại
+            const row = Math.floor(i / numColumns);        // dòng hiện tại
+
+            const rect = new PIXI.Rectangle(
+                col * frameWidth,
+                row * frameHeight,
+                frameWidth,
+                frameHeight
+            );
+
             const frameTexture = new PIXI.Texture({ source: baseTexture, frame: rect });
             frames.push(frameTexture);
         }
@@ -58,28 +82,23 @@ export class BattleEffectService {
         explosion.anchor.set(0.5);
         explosion.x = x;
         explosion.y = y;
-        explosion.animationSpeed = 0.15;
-        explosion.loop = true;
+        explosion.animationSpeed = 0.25;
+        explosion.loop = false;
 
         battleOverlay.addChild(explosion);
 
         return new Promise((resolve) => {
-            let loops = 0;
-            explosion.onLoop = () => {
-                loops++;
-                if (loops >= 3) {
-                    explosion.stop();
-                    battleOverlay.removeChild(explosion);
-                    explosion.destroy();
-                    resolve();
-                }
+            explosion.onComplete = () => {
+                battleOverlay.removeChild(explosion);
+                explosion.destroy();
+                resolve();
             };
             explosion.play();
         });
     }
 
     // Attack effect
-    async playAttackEffect({ from, to, texturePath, frameSize, numFrames, battleOverlay }) {
+    async playAttackEffect({ from, to, texturePath, frameSize, numFrames, battleOverlay, attackerType = 'player' }) {
         const texture = await PIXI.Assets.load(texturePath);
         const baseTexture = texture.baseTexture;
 
@@ -123,7 +142,7 @@ export class BattleEffectService {
                 } else {
                     battleOverlay.removeChild(sprite);
                     sprite.destroy();
-                    this.playExplosionEffect(targetX, targetY, battleOverlay).then(resolve);
+                    this.playExplosionEffect(targetX, targetY, battleOverlay, attackerType).then(resolve);
                 }
             };
             requestAnimationFrame(animate);
@@ -198,7 +217,7 @@ export class BattleEffectService {
     // Hiệu ứng lên cấp (Level Up)
     async playLevelUpEffect(monster, battleOverlay) {
         // Load assets
-        const texture = await PIXI.Assets.load('./Player_Pokemon/level_up.png');
+        const texture = await PIXI.Assets.load('./Player_Pokemon/Effect/level_up.png');
         const baseTexture = texture.baseTexture;
 
         // Thiết lập kích thước

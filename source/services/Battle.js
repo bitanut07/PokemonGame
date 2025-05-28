@@ -25,7 +25,7 @@ export class BattleService {
     async initPlayerMonster() {
         // Load assets Player Monster
         const baseTexturePlayer = await PIXI.Assets.load(
-            './Player_Pokemon/embySprite.png'
+            './Player_Pokemon/Object/embySprite.png'
         );
         const sourceTexturePlayer = baseTexturePlayer.baseTexture;
 
@@ -52,7 +52,7 @@ export class BattleService {
     // Bắt đầu trận chiến
     async startBattle(mapNumber = 1) {
         this.isActive = true; // Đánh dấu đang battle
-        document.getElementById('endBattleButton').style.display = 'block';
+        // document.getElementById('endBattleButton').style.display = 'block';
 
         console.log('Chuyển sang màn hình chiến đấu (overlay)');
 
@@ -75,7 +75,7 @@ export class BattleService {
 
         // Load ảnh battle background từ thư mục Images
         const battleTexture = await PIXI.Assets.load({
-            src: './Player_Pokemon/battleBackground.png',
+            src: './Player_Pokemon/Background/battleBackground.png',
             data: { resourceOptions: { autoLoad: true } }
         });
 
@@ -116,7 +116,7 @@ export class BattleService {
 
         // Load ảnh enemy monster
         const baseTextureEnemy = await PIXI.Assets.load(
-            './Player_Pokemon/draggleSprite.png'
+            './Player_Pokemon/Object/draggleSprite.png'
         );
         const sourceTextureEnemy = baseTextureEnemy.baseTexture;
 
@@ -169,7 +169,7 @@ export class BattleService {
     async createArrowIndicator() {
         // Load asset turn arrow
         const texture = await PIXI.Assets.load(
-            './Player_Pokemon/turn_arrow.png'
+            './Player_Pokemon/Effect/turn_arrow.png'
         );
         const baseTexture = texture.baseTexture;
 
@@ -321,49 +321,127 @@ export class BattleService {
         document.getElementById('enemyInfoBox').style.display = 'none';
     }
 
-    // Điều khiển thao tác chiến đấu của player
-    async addBattleControls() {
-        const container = document.createElement('div');
-        container.id = 'battleControls';
-        container.style.position = 'absolute';
-        container.style.bottom = '100px';
-        container.style.right = '40px';
-        container.style.display = 'flex';
-        container.style.flexDirection = 'column';
-        container.style.gap = '12px';
-        container.style.zIndex = 20;
+    // // Điều khiển thao tác chiến đấu của player
+    // async addBattleControls() {
+    //     const container = document.createElement('div');
+    //     container.id = 'battleControls';
+    //     container.style.position = 'absolute';
+    //     container.style.bottom = '100px';
+    //     container.style.right = '40px';
+    //     container.style.display = 'flex';
+    //     container.style.flexDirection = 'column';
+    //     container.style.gap = '12px';
+    //     container.style.zIndex = 20;
 
-        // ====== Attack Button ======
-        const attackBtn = document.createElement('button');
-        attackBtn.innerText = 'Attack';
-        attackBtn.style.padding = '12px 20px';
-        attackBtn.style.fontSize = '16px';
-        attackBtn.style.backgroundColor = '#3399ff';
-        attackBtn.style.color = 'white';
-        attackBtn.style.border = 'none';
-        attackBtn.style.borderRadius = '8px';
-        attackBtn.style.cursor = 'pointer';
+    //     // ====== Attack Button ======
+    //     const attackBtn = document.createElement('button');
+    //     attackBtn.innerText = 'Attack';
+    //     attackBtn.style.padding = '12px 20px';
+    //     attackBtn.style.fontSize = '16px';
+    //     attackBtn.style.backgroundColor = '#3399ff';
+    //     attackBtn.style.color = 'white';
+    //     attackBtn.style.border = 'none';
+    //     attackBtn.style.borderRadius = '8px';
+    //     attackBtn.style.cursor = 'pointer';
+
+    //     await this.updateArrowTarget(this.playerMonster);
+
+    //     // ATTACK
+    //     attackBtn.onclick = async () => {
+    //         if (
+    //             !this.enemyMonster ||
+    //             this.turnLocked ||
+    //             this.currentTurn !== 'player'
+    //         )
+    //             return;
+
+    //         this.turnLocked = true; // Khoá thao tác
+
+    //         await this.advanceAndAttack(
+    //             this.playerMonster,
+    //             this.enemyMonster,
+    //             'player'
+    //         );
+
+    //         console.log(`💥 Enemy HP: ${this.enemyMonster.hp}`);
+
+    //         if (this.enemyMonster.hp <= 0) {
+    //             await this.knockOutMonster(this.enemyMonster);
+    //             await this.gainExp(this.playerMonster, this.enemyMonster.level);
+    //             await this.showBattleBanner();
+    //             return;
+    //         }
+
+    //         // Gọi turn enemy sau delay
+    //         setTimeout(() => {
+    //             this.enemyTurn();
+    //         }, 1500);
+    //     };
+
+    //     // ====== Heal Button ======
+    //     const healBtn = document.createElement('button');
+    //     healBtn.innerText = 'Heal';
+    //     healBtn.style.padding = '12px 20px';
+    //     healBtn.style.fontSize = '16px';
+    //     healBtn.style.backgroundColor = '#66cc66';
+    //     healBtn.style.color = 'white';
+    //     healBtn.style.border = 'none';
+    //     healBtn.style.borderRadius = '8px';
+    //     healBtn.style.cursor = 'pointer';
+
+    //     // HEALING
+    //     healBtn.onclick = async () => {
+    //         if (this.turnLocked || this.currentTurn !== 'player') return;
+
+    //         this.turnLocked = true;
+
+    //         const maxHp = this.playerMonster.maxHp || 100;
+
+    //         const healAmount = 20 + this.playerMonster.level * 10;
+    //         this.playerMonster.hp = Math.min(
+    //             this.playerMonster.hp + healAmount,
+    //             maxHp
+    //         );
+
+    //         this.updateHpBar(this.playerMonster, this.playerHpBar);
+    //         this.updateMonsterInfo(this.playerMonster, false);
+    //         console.log(`❤️ Player HP: ${this.playerMonster.hp}`);
+
+    //         await this.effectService.playHealEffect(
+    //             this.playerMonster,
+    //             true,
+    //             this.battleOverlay
+    //         ); // Gọi hiệu ứng heal
+
+    //         // Quay lại enemy turn
+    //         setTimeout(() => {
+    //             this.enemyTurn();
+    //         }, 700);
+    //     };
+
+    //     // Thêm nút vào DOM
+    //     container.appendChild(attackBtn);
+    //     container.appendChild(healBtn);
+    //     document.body.appendChild(container);
+    // }
+
+
+    async addBattleControls() {
+        const controlBar = document.getElementById('battleControlBar');
+        const attackBtn = document.getElementById('attackBtn');
+        const healBtn = document.getElementById('healBtn');
+        const endBtn = document.getElementById('endBattleBtn');
+
+        controlBar.style.display = 'flex';
 
         await this.updateArrowTarget(this.playerMonster);
 
-        // ATTACK
         attackBtn.onclick = async () => {
-            if (
-                !this.enemyMonster ||
-                this.turnLocked ||
-                this.currentTurn !== 'player'
-            )
-                return;
+            if (!this.enemyMonster || this.turnLocked || this.currentTurn !== 'player') return;
 
-            this.turnLocked = true; // Khoá thao tác
+            this.turnLocked = true;
 
-            await this.advanceAndAttack(
-                this.playerMonster,
-                this.enemyMonster,
-                'player'
-            );
-
-            console.log(`💥 Enemy HP: ${this.enemyMonster.hp}`);
+            await this.advanceAndAttack(this.playerMonster, this.enemyMonster, 'player');
 
             if (this.enemyMonster.hp <= 0) {
                 await this.knockOutMonster(this.enemyMonster);
@@ -372,57 +450,29 @@ export class BattleService {
                 return;
             }
 
-            // Gọi turn enemy sau delay
-            setTimeout(() => {
-                this.enemyTurn();
-            }, 1500);
+            setTimeout(() => this.enemyTurn(), 1500);
         };
 
-        // ====== Heal Button ======
-        const healBtn = document.createElement('button');
-        healBtn.innerText = 'Heal';
-        healBtn.style.padding = '12px 20px';
-        healBtn.style.fontSize = '16px';
-        healBtn.style.backgroundColor = '#66cc66';
-        healBtn.style.color = 'white';
-        healBtn.style.border = 'none';
-        healBtn.style.borderRadius = '8px';
-        healBtn.style.cursor = 'pointer';
-
-        // HEALING
         healBtn.onclick = async () => {
             if (this.turnLocked || this.currentTurn !== 'player') return;
 
             this.turnLocked = true;
-
             const maxHp = this.playerMonster.maxHp || 100;
-
             const healAmount = 20 + this.playerMonster.level * 10;
-            this.playerMonster.hp = Math.min(
-                this.playerMonster.hp + healAmount,
-                maxHp
-            );
+            this.playerMonster.hp = Math.min(this.playerMonster.hp + healAmount, maxHp);
 
             this.updateHpBar(this.playerMonster, this.playerHpBar);
             this.updateMonsterInfo(this.playerMonster, false);
-            console.log(`❤️ Player HP: ${this.playerMonster.hp}`);
+            await this.effectService.playHealEffect(this.playerMonster, true, this.battleOverlay);
 
-            await this.effectService.playHealEffect(
-                this.playerMonster,
-                true,
-                this.battleOverlay
-            ); // Gọi hiệu ứng heal
-
-            // Quay lại enemy turn
-            setTimeout(() => {
-                this.enemyTurn();
-            }, 700);
+            setTimeout(() => this.enemyTurn(), 700);
         };
 
-        // Thêm nút vào DOM
-        container.appendChild(attackBtn);
-        container.appendChild(healBtn);
-        document.body.appendChild(container);
+        endBtn.onclick = () => {
+            this.endBattle();
+        };
+
+        endBtn.disabled = this.currentTurn !== 'player';
     }
 
     // Nhận EXP
@@ -466,7 +516,7 @@ export class BattleService {
 
     // Tạo thanh HP
     async createHpBar(monster, isEnemy = false) {
-        const texture = await PIXI.Assets.load('./Player_Pokemon/hp.png');
+        const texture = await PIXI.Assets.load('./Player_Pokemon/Effect/hp.png');
         const baseTexture = texture.baseTexture;
 
         const totalFrames = 4;
@@ -515,7 +565,7 @@ export class BattleService {
 
     // Cập nhật thanh HP
     async updateHpBar(monster, barSprite) {
-        const texture = await PIXI.Assets.load('./Player_Pokemon/hp.png');
+        const texture = await PIXI.Assets.load('./Player_Pokemon/Effect/hp.png');
         const baseTexture = texture.baseTexture;
 
         const totalFrames = 4;
@@ -558,6 +608,7 @@ export class BattleService {
         await new Promise(resolve => setTimeout(resolve, 500));
 
         console.log('👾 Enemy turn!');
+        document.getElementById('endBattleBtn').disabled = true;
 
         // Ngẫu nhiên thao tác attack/heal
         const actionRoll = Math.random();
@@ -605,6 +656,7 @@ export class BattleService {
 
         this.currentTurn = 'player';
         this.turnLocked = false;
+        document.getElementById('endBattleBtn').disabled = false;
     }
 
     // Thao tác tấn công
@@ -662,10 +714,11 @@ export class BattleService {
             await this.effectService.playAttackEffect({
                 from: this.playerMonster,
                 to: this.enemyMonster,
-                texturePath: './Player_Pokemon/bomb.png',
+                texturePath: './Player_Pokemon/Effect/bomb.png',
                 frameSize: { width: 188, height: 44 },
                 numFrames: 4,
-                battleOverlay: this.battleOverlay
+                battleOverlay: this.battleOverlay,
+                attackerType: 'player'
             });
 
             // Trừ HP enemy và cập nhật ngay
@@ -678,10 +731,11 @@ export class BattleService {
             await this.effectService.playAttackEffect({
                 from: this.enemyMonster,
                 to: this.playerMonster,
-                texturePath: './Player_Pokemon/stones.png',
-                frameSize: { width: 240, height: 45 },
-                numFrames: 5,
-                battleOverlay: this.battleOverlay
+                texturePath: './Player_Pokemon/Effect/wind.png',
+                frameSize: { width: 1000, height: 100 },
+                numFrames: 10,
+                battleOverlay: this.battleOverlay,
+                attackerType: 'enemy'
             });
 
             // Trừ HP player và cập nhật ngay
@@ -762,26 +816,15 @@ export class BattleService {
         });
     }
 
-    // Hiện biểu tượng chiến thắng hoặc thất bại
     async showBattleBanner(type = 'victory') {
-        // Load assets banner
-        const texture = await PIXI.Assets.load('./Player_Pokemon/victory.png');
-        const baseTexture = texture.baseTexture;
+        const texturePath =
+            type === 'victory'
+                ? './Player_Pokemon/Background/victory.png'
+                : './Player_Pokemon/Background/defeat.png';
 
-        // Cắt phần ảnh theo type
-        const isVictory = type === 'victory';
-        const rect = new PIXI.Rectangle(
-            0,
-            isVictory ? 0 : baseTexture.height / 2,
-            baseTexture.width,
-            baseTexture.height / 2
-        );
-
-        const croppedTexture = new PIXI.Texture({
-            source: baseTexture,
-            frame: rect
-        });
-        const sprite = new PIXI.Sprite(croppedTexture);
+        // Load ảnh banner phù hợp
+        const texture = await PIXI.Assets.load(texturePath);
+        const sprite = new PIXI.Sprite(texture);
 
         sprite.anchor.set(0.5);
         sprite.x = this.app.canvas.width / 2;
@@ -796,7 +839,7 @@ export class BattleService {
 
         let start = performance.now();
 
-        const animate = now => {
+        const animate = (now) => {
             const t = Math.min((now - start) / 500, 1);
             sprite.scale.set(0.1 + t * 0.5);
             sprite.alpha = t;
@@ -817,7 +860,8 @@ export class BattleService {
     endBattle() {
         this.isActive = false;
         this.playerService.inBattle = false;
-        document.getElementById('endBattleButton').style.display = 'none';
+        document.getElementById('battleControlBar').style.display = 'none';
+        // document.getElementById('endBattleButton').style.display = 'none';
 
         // Giữ lại playerMonster
         if (this.playerMonster?.sprite && this.battleOverlay) {
