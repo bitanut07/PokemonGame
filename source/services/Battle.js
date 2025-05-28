@@ -30,7 +30,7 @@ export class BattleService {
         this.playerMonster = new Monster({
             name: 'Hello',
             hp: 100,
-            attack: 150,
+            attack: 40,
             level: 1,
             spriteSheet: sourceTexturePlayer,
             imageSize: { width: 344, height: 89 },
