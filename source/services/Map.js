@@ -1,20 +1,35 @@
 // Map.js - Handles map-related functionality
 import { rectangularCollision } from '../js/utils.js';
 import {
-    boundaries,
-    boundaries1p2,
-    boundaries2,
-    boundaries2p2,
-    boundaries3,
-    gates1,
-    gates1p2,
-    gates2,
-    gates2p2,
-    gates3,
-    connectGate
+    offset,
+    createConnectGate,
+    createBoundary,
+    createGate,
+    collisionMap,
+    gatesMap1,
+    gatesMap2,
+    gatesMap3,
+    collisionsMap02,
+    collisionsMap03
 } from '../data/inforAllMap.js';
 
+//copy from inforAllMap.js
+
+// let boundariesCopy = [...boundaries];
+// let boundaries1p2Copy = [...boundaries1p2];
+// let boundaries2Copy = [...boundaries2];
+// let boundaries2p2Copy = [...boundaries2p2];
+// let boundaries3Copy = [...boundaries3];
+
+// let gates1Copy = [...gates1];
+// let gates1p2Copy = [...gates1p2];
+// let gates2Copy = [...gates2];
+// let gates2p2Copy = [...gates2p2];
+// let gates3Copy = [...gates3];
+
 export class MapService {
+    originalBoundariesMap;
+    originalGatesMap;
     boundariesMap;
     gatesAllMap;
     movableMap;
@@ -42,17 +57,14 @@ export class MapService {
         this.mapLayer.addChild(this.boundaryContainer);
 
         // Khởi tạo các thuộc tính cơ bản
-        this.boundariesMap = [
-            [boundaries, boundaries1p2],
-            [boundaries2, boundaries2p2],
-            [boundaries3]
-        ];
-        this.gatesAllMap = [[gates1, gates1p2], [gates2, gates2p2], [gates3]];
+
+        this.resetPositionCollisionAndGateTest();
+
         this.movableMap = [];
         this.gameLoopId = null;
         this.positionNextMap = {
-            x: 1780,
-            y: 420
+            x: offset.map1p1.x,
+            y: offset.map1p1.y
         };
         this.srcMap = [
             './MapFinish/Map1.png',
@@ -195,7 +207,6 @@ export class MapService {
     async loadMap() {
         try {
             console.log('Loading map', this.numberMap);
-
             // Xóa tất cả sprites cũ trong mapContainer
             this.mapContainer.removeChildren().forEach(child => {
                 if (child && child.destroy) {
@@ -219,7 +230,7 @@ export class MapService {
                 this.positionNextMap.y
             );
             this.currentMapSprite.scale.set(1, 1);
-            this.currentMapSprite.anchor.set(0.5, 0.5);
+            this.currentMapSprite.anchor.set(0, 0);
 
             console.log('Map loaded successfully!', {
                 map: this.numberMap,
@@ -260,9 +271,9 @@ export class MapService {
                 this.positionNextMap.y
             );
             this.currentForegroundSprite.scale.set(1, 1);
-            this.currentForegroundSprite.anchor.set(0.5, 0.5);
+            this.currentForegroundSprite.anchor.set(0, 0);
 
-            this.renderBoundaries();
+            console.log(this.positionCollisionAndGate);
 
             console.log('Foreground map loaded successfully!');
             return this.foregroundMap;
@@ -289,11 +300,6 @@ export class MapService {
 
         // Game loop for continuous movement
         const moveMap = async () => {
-            // ⛔ Nếu đang chuyển map thì bỏ qua vòng này
-            if (this.inTransition) {
-                this.gameLoopId = requestAnimationFrame(moveMap);
-                return;
-            }
             const playerPos = this.playerService.getPlayerPosition();
             const player = {
                 x: playerPos.x,
@@ -329,7 +335,7 @@ export class MapService {
                     })
                 ) {
                     console.log('Collision with gate detected');
-                    console.log(gate.x, gate.y);
+                    console.log('gate', gate.x, gate.y);
                     const connect = this.ConnectGate(gate);
 
                     if (connect && connect.numberChangeMap !== undefined) {
@@ -341,10 +347,6 @@ export class MapService {
                             connect.inforScreen,
                             connect.numberGate
                         );
-                        // Ngăn chuyển map liên tục
-                        setTimeout(() => {
-                            this.inTransition = false;
-                        }, 3000);
 
                         return;
                     } else {
@@ -517,9 +519,43 @@ export class MapService {
         moveMap();
     }
 
+    resetPositionCollisionAndGateTest() {
+        let boundariesCopy = createBoundary(collisionMap, offset.map1p1);
+        let boundaries1p2Copy = createBoundary(collisionMap, offset.map1p2);
+        let boundaries2Copy = createBoundary(collisionsMap02, offset.map2);
+        let boundaries2p2Copy = createBoundary(collisionsMap02, offset.map2p2);
+        let boundaries3Copy = createBoundary(collisionsMap03, offset.map3);
+
+        let gates1Copy = createGate(gatesMap1, offset.map1p1);
+        let gates1p2Copy = createGate(gatesMap1, offset.map1p2);
+        let gates2Copy = createGate(gatesMap2, offset.map2);
+        let gates2p2Copy = createGate(gatesMap2, offset.map2p2);
+        let gates3Copy = createGate(gatesMap3, offset.map3);
+
+        this.boundariesMap = [
+            [boundariesCopy, boundaries1p2Copy],
+            [boundaries2Copy, boundaries2p2Copy],
+            [boundaries3Copy]
+        ];
+
+        this.gatesAllMap = [
+            [gates1Copy, gates1p2Copy],
+            [gates2Copy, gates2p2Copy],
+            [gates3Copy]
+        ];
+        this.connectGate = createConnectGate(
+            gates1Copy,
+            gates1p2Copy,
+            gates2Copy,
+            gates2p2Copy,
+            gates3Copy
+        );
+    }
+
     async changeMap(numberMap, inforScreen, numberGate) {
         try {
             console.log('Starting map change to:', numberMap);
+            this.resetPositionCollisionAndGateTest();
 
             const oldMapIndex = this.numberMap - 1;
             const oldMapSrc = this.srcMap[oldMapIndex];
@@ -558,16 +594,25 @@ export class MapService {
             // Cập nhật trạng thái
             this.numberMap = numberMap;
             this.positionCollisionAndGate = numberGate;
-            if (numberMap === 1) {
-                this.positionNextMap = { x: 1780, y: 420 };
-            } else {
-                this.positionNextMap = {
-                    x: inforScreen.x,
-                    y: inforScreen.y
-                };
-            }
+            this.positionNextMap = {
+                x: inforScreen.x,
+                y: inforScreen.y
+            };
 
-            console.log('New map position:', this.positionNextMap);
+            //reset position container map
+            this.mapContainer.position.set(0, 0);
+            this.foregroundMap.position.set(0, 0);
+
+            console.log(
+                'Container position before reset:',
+                this.mapContainer.position
+            );
+            console.log(
+                'Boundary position before reset:',
+                this.boundariesMap[this.numberMap - 1][
+                    this.positionCollisionAndGate
+                ][0].position
+            );
 
             await this.loadMap();
             await this.loadForegroundMap();
@@ -583,7 +628,7 @@ export class MapService {
     }
 
     ConnectGate(boundaryGate) {
-        for (const gate of connectGate) {
+        for (const gate of this.connectGate) {
             for (const boundary of gate.positionGate1.boundaryPosition) {
                 if (
                     boundary.x === boundaryGate.x &&
