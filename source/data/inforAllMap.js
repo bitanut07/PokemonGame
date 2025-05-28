@@ -92,6 +92,7 @@ const gatesMap3 = [];
 for (let i = 0; i < gateMap3.length; i += 70) {
     gatesMap3.push(gateMap3.slice(i, i + 70));
 }
+
 const createConnectGate = (gates1, gates1p2, gates2, gates2p2, gates3) => {
     const connectGate = [
         {
@@ -176,6 +177,22 @@ const createConnectGate = (gates1, gates1p2, gates2, gates2p2, gates3) => {
     return connectGate;
 };
 
+const battleZonesMap01 = [];
+const battleZonesMap02 = [];
+const battleZonesMap03 = [];
+
+for (let i = 0; i < battleZonesMap1.length; i += 70) {
+    battleZonesMap01.push(battleZonesMap1.slice(i, i + 70));
+}
+
+for (let i = 0; i < battleZonesMap2.length; i += 70) {
+    battleZonesMap02.push(battleZonesMap2.slice(i, i + 70));
+}
+
+for (let i = 0; i < battleZonesMap3.length; i += 70) {
+    battleZonesMap03.push(battleZonesMap3.slice(i, i + 70));
+}
+
 export {
     offset,
     createConnectGate,
@@ -186,5 +203,8 @@ export {
     gatesMap2,
     gatesMap3,
     collisionsMap02,
-    collisionsMap03
+    collisionsMap03,
+    battleZonesMap01,
+    battleZonesMap02,
+    battleZonesMap03
 };

@@ -10,7 +10,10 @@ import {
     gatesMap2,
     gatesMap3,
     collisionsMap02,
-    collisionsMap03
+    collisionsMap03,
+    battleZonesMap01,
+    battleZonesMap02,
+    battleZonesMap03
 } from '../data/inforAllMap.js';
 
 export class MapService {
@@ -296,15 +299,15 @@ export class MapService {
 
             let canMove = true;
 
-            // if (this.playerService.inBattle) {
-            //     requestAnimationFrame(moveMap);
-            //     return; // ❌ Không cho di chuyển nếu đang chiến đấu
-            // }
+            if (this.playerService.inBattle) {
+                requestAnimationFrame(moveMap);
+                return; // ❌ Không cho di chuyển nếu đang chiến đấu
+            }
 
-            // if (this.playerService.inBattle) {
-            //     requestAnimationFrame(moveMap);
-            //     return; // ❌ Không cho di chuyển nếu đang chiến đấu
-            // }
+            if (this.playerService.inBattle) {
+                requestAnimationFrame(moveMap);
+                return; // ❌ Không cho di chuyển nếu đang chiến đấu
+            }
 
             // Kiểm tra va chạm với cổng
             for (
@@ -522,7 +525,9 @@ export class MapService {
     checkBattleZoneCollision(player) {
         let enteredZone = false;
 
-        for (const zone of this.battleZones) {
+        for (const zone of this.battleZonesMap[this.numberMap - 1][
+            this.positionCollisionAndGate
+        ]) {
             const zoneX = zone.x + this.mapContainer.x;
             const zoneY = zone.y + this.mapContainer.y;
 
@@ -569,7 +574,9 @@ export class MapService {
 
         // Nếu không còn nằm trong battle zone nào, reset current zone
         if (
-            !this.battleZones.some(zone => {
+            !this.battleZonesMap[this.numberMap - 1][
+                this.positionCollisionAndGate
+            ].some(zone => {
                 const zoneX = zone.x + this.mapContainer.x;
                 const zoneY = zone.y + this.mapContainer.y;
                 const overlapX = Math.max(
@@ -623,6 +630,27 @@ export class MapService {
             gates2p2Copy,
             gates3Copy
         );
+
+        let battleZonesMap01p1 = createBoundary(
+            battleZonesMap01,
+            offset.map1p1
+        );
+        let battleZonesMap01p2 = createBoundary(
+            battleZonesMap01,
+            offset.map1p2
+        );
+        let battleZonesMap02p1 = createBoundary(battleZonesMap02, offset.map2);
+        let battleZonesMap02p2 = createBoundary(
+            battleZonesMap02,
+            offset.map2p2
+        );
+        let battleZonesMap03p1 = createBoundary(battleZonesMap03, offset.map3);
+
+        this.battleZonesMap = [
+            [battleZonesMap01p1, battleZonesMap01p2],
+            [battleZonesMap02p1, battleZonesMap02p2],
+            [battleZonesMap03p1]
+        ];
     }
 
     async changeMap(numberMap, inforScreen, numberGate) {
@@ -754,6 +782,12 @@ export class MapService {
             gateGraphics.y = gate.y;
             this.boundaryContainer.addChild(gateGraphics);
         });
+    }
+
+    getBattleService() {
+        return this.battleZonesMap[this.numberMap - 1][
+            this.positionCollisionAndGate
+        ];
     }
 
     // Method để cleanup khi cần thiết

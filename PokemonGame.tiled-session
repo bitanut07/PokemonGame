@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "C:/Users/TUAN ANH/Downloads/Forest.tmx",
+    "activeFile": "Tiled/Forest.tmx",
     "expandedProjectPaths": [
     ],
     "exportAsImage.useCurrentScale": true,
@@ -11,18 +11,18 @@
     "fileStates": {
         "C:/Users/TUAN ANH/Downloads/Coast.tmx": {
             "scale": 3,
-            "selectedLayer": 0,
+            "selectedLayer": 15,
             "viewCenter": {
-                "x": 420.16666666666663,
-                "y": 240.16666666666663
+                "x": 228.99999999999997,
+                "y": 117.16666666666669
             }
         },
         "C:/Users/TUAN ANH/Downloads/Forest.tmx": {
-            "scale": 2,
-            "selectedLayer": 40,
+            "scale": 4,
+            "selectedLayer": 39,
             "viewCenter": {
-                "x": 228.5,
-                "y": 290.75
+                "x": 350,
+                "y": 290.875
             }
         },
         "C:/Users/TUAN ANH/Downloads/collisionTileset.tsx": {
@@ -59,7 +59,7 @@
             "selectedLayer": 40,
             "viewCenter": {
                 "x": 516,
-                "y": 240.25
+                "y": 227.5
             }
         },
         "Tiled/collisionTileset.tsx": {
@@ -97,9 +97,9 @@
         "Map.tmx",
         "collision.tsx",
         "Tiled/Coast.tmx",
-        "Tiled/Forest.tmx",
         "C:/Users/TUAN ANH/Downloads/Coast.tmx",
-        "C:/Users/TUAN ANH/Downloads/Forest.tmx"
+        "C:/Users/TUAN ANH/Downloads/Forest.tmx",
+        "Tiled/Forest.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
