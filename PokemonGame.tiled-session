@@ -3,18 +3,40 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Map.tmx",
+    "activeFile": "C:/Users/TUAN ANH/Downloads/Forest.tmx",
     "expandedProjectPaths": [
     ],
     "exportAsImage.useCurrentScale": true,
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
+        "C:/Users/TUAN ANH/Downloads/Coast.tmx": {
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 420.16666666666663,
+                "y": 240.16666666666663
+            }
+        },
+        "C:/Users/TUAN ANH/Downloads/Forest.tmx": {
+            "scale": 2,
+            "selectedLayer": 40,
+            "viewCenter": {
+                "x": 228.5,
+                "y": 290.75
+            }
+        },
+        "C:/Users/TUAN ANH/Downloads/collisionTileset.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/TUAN ANH/Downloads/pokemonStyleGameTileset.tsx": {
+            "scaleInDock": 1
+        },
         "Map.tmx": {
             "scale": 4,
-            "selectedLayer": 12,
+            "selectedLayer": 15,
             "viewCenter": {
-                "x": 551.75,
-                "y": 154.875
+                "x": 421.75,
+                "y": 240.125
             }
         },
         "Pokemon Style Game.tsx": {
@@ -25,9 +47,26 @@
             "scale": 1.6048214285714284,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 409.3913430510738,
-                "y": 163.56960053410486
+                "x": 420.2959830866808,
+                "y": 240.21364192722828
             }
+        },
+        "Tiled/Forest.tmx": {
+            "expandedGroupLayers": [
+                43
+            ],
+            "scale": 2,
+            "selectedLayer": 38,
+            "viewCenter": {
+                "x": 420.25,
+                "y": 240.25
+            }
+        },
+        "Tiled/collisionTileset.tsx": {
+            "scaleInDock": 1
+        },
+        "Tiled/pokemonStyleGameTileset.tsx": {
+            "scaleInDock": 1
         },
         "collision.tsx": {
             "scaleInDock": 1,
@@ -35,6 +74,7 @@
         }
     },
     "last.exportedFilePath": "D:/HK2/DHUD/Project/source/data",
+    "last.externalTilesetPath": "D:/HK2/DHUD/Project/Tiled",
     "last.imagePath": "D:/HK2/DHUD/Project/Tiled",
     "map.height": 40,
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
@@ -45,13 +85,21 @@
     "openFiles": [
         "Pokemon Style Game.tsx",
         "Map.tmx",
-        "collision.tsx"
+        "collision.tsx",
+        "Tiled/Coast.tmx",
+        "Tiled/Forest.tmx",
+        "C:/Users/TUAN ANH/Downloads/Forest.tmx",
+        "C:/Users/TUAN ANH/Downloads/Coast.tmx"
     ],
     "project": "PokemonGame.tiled-project",
     "recentFiles": [
         "Pokemon Style Game.tsx",
+        "Map.tmx",
         "collision.tsx",
-        "Map.tmx"
+        "Tiled/Coast.tmx",
+        "Tiled/Forest.tmx",
+        "C:/Users/TUAN ANH/Downloads/Coast.tmx",
+        "C:/Users/TUAN ANH/Downloads/Forest.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

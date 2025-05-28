@@ -31,43 +31,43 @@ async function initGame() {
         const foregroundMap = await mapService.loadForegroundMap();
 
         try {
-            // Load player trước
+            // Load player
             const playerLayer = await playerService.loadPlayer();
-            app.stage.addChild(playerLayer);
 
-            // Sau đó load map và thiết lập controls
+            // Load map đúng thứ tự
             const mapLayer = await mapService.loadMap();
+            const foregroundMap = await mapService.loadForegroundMap();
+
+            // Thêm vào stage theo thứ tự
             app.stage.addChild(mapLayer);
 
             // //Hien boundaries
             // mapService.boundariesMap.forEach(boundary => {
             //     app.stage.addChild(boundary);
             // });
-
-            // Hiển thị overlay xanh dương để kiểm tra vị trí battle zone
-            // mapService.battleZones.forEach(zone => {
-            //     const debugOverlay = new PIXI.Graphics();
-            //     debugOverlay.beginFill(0xf00000);
-            //     debugOverlay.drawRect(0, 0, 48, 48);
-            //     debugOverlay.endFill();
-            //     debugOverlay.x = zone.x;
-            //     debugOverlay.y = zone.y;
-
-            //     // Thêm vào cùng mapContainer để di chuyển theo bản đồ
-            //     mapService.mapContainer.addChild(debugOverlay);
-            // });
-
             app.stage.addChild(playerLayer);
+
             app.stage.addChild(foregroundMap);
 
-            document.getElementById('endBattleButton').addEventListener('click', () => {
-                // Giả sử bạn đã có `battleService` là một biến toàn cục hoặc truy cập được
-                if (window.battleService && battleService.isActive) {
-                    battleService.endBattle();
-                }
-            });
+            document
+                .getElementById('endBattleButton')
+                .addEventListener('click', () => {
+                    // Giả sử bạn đã có `battleService` là một biến toàn cục hoặc truy cập được
+                    if (window.battleService && battleService.isActive) {
+                        battleService.endBattle();
+                    }
+                });
 
-            // Thiết lập điều khiển cho map sau khi player đã được load
+            document
+                .getElementById('endBattleButton')
+                .addEventListener('click', () => {
+                    // Giả sử bạn đã có `battleService` là một biến toàn cục hoặc truy cập được
+                    if (window.battleService && battleService.isActive) {
+                        battleService.endBattle();
+                    }
+                });
+
+            // Setup điều khiển
             mapService.setupControls();
         } catch (error) {
             console.error('Error loading game assets:', error);
