@@ -41,10 +41,6 @@ async function initGame() {
             // Thêm vào stage theo thứ tự
             app.stage.addChild(mapLayer);
 
-            // //Hien boundaries
-            // mapService.boundariesMap.forEach(boundary => {
-            //     app.stage.addChild(boundary);
-            // });
             app.stage.addChild(playerLayer);
 
             app.stage.addChild(foregroundMap);

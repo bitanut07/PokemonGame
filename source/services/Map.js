@@ -272,6 +272,30 @@ export class MapService {
         }
     }
 
+    resetGame() {
+        //load lại map 1 p1
+        this.numberMap = 1;
+        this.positionNextMap = {
+            x: offset.map1p1.x,
+            y: offset.map1p1.y
+        };
+        this.resetPositionCollisionAndGateTest();
+        //reset position container map
+        this.mapContainer.position.set(0, 0);
+        this.foregroundMap.position.set(0, 0);
+        //load lại map
+        this.loadMap();
+        //load lại foreground map
+        this.loadForegroundMap();
+        //load lại player
+        this.playerService.loadPlayer();
+
+        this.battleService.resetNewGame = false;
+        this.battleService.playerMonster = null;
+        this.battleService.initPlayerMonster();
+        this.playerService.inBattle = false;
+    }
+
     setupControls() {
         // Xóa event listeners cũ
         window.removeEventListener('keydown', this.handleKeyDown);
@@ -307,6 +331,10 @@ export class MapService {
             if (this.playerService.inBattle) {
                 requestAnimationFrame(moveMap);
                 return; // ❌ Không cho di chuyển nếu đang chiến đấu
+            }
+            //Kiểm tra thuộc tính resetNewGame của battleService
+            if (this.battleService.resetNewGame) {
+                this.resetGame();
             }
 
             // Kiểm tra va chạm với cổng
@@ -566,7 +594,8 @@ export class MapService {
                 console.log('Tiến vào trận chiến!');
                 this.playerService.inBattle = true;
                 this.playerService.stopAnimation();
-                if (this.battleService) this.battleService.startBattle(this.numberMap);
+                if (this.battleService)
+                    this.battleService.startBattle(this.numberMap);
             } else {
                 console.log('Không gặp trận chiến.');
             }
