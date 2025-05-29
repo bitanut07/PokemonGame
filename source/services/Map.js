@@ -272,7 +272,7 @@ export class MapService {
         }
     }
 
-    resetGame() {
+    async resetGame() {
         //load lại map 1 p1
         this.numberMap = 1;
         this.positionNextMap = {
@@ -280,13 +280,16 @@ export class MapService {
             y: offset.map1p1.y
         };
         this.resetPositionCollisionAndGateTest();
+        // Khởi tạo lại các thuộc tính
+        this.initEventHandlers();
+        this.initMovableMap();
+
         //reset position container map
         this.mapContainer.position.set(0, 0);
         this.foregroundMap.position.set(0, 0);
         //load lại map
-        this.loadMap();
-        //load lại foreground map
-        this.loadForegroundMap();
+        await this.loadMap();
+        await this.loadForegroundMap();
         //load lại player
         this.playerService.loadPlayer();
 
@@ -294,6 +297,15 @@ export class MapService {
         this.battleService.playerMonster = null;
         this.battleService.initPlayerMonster();
         this.playerService.inBattle = false;
+
+        // Hủy vòng lặp cũ
+        if (this.gameLoopId) {
+            cancelAnimationFrame(this.gameLoopId);
+            this.gameLoopId = null;
+        }
+
+        // Gọi lại setupControls
+        this.setupControls();
     }
 
     setupControls() {
@@ -322,11 +334,6 @@ export class MapService {
             };
 
             let canMove = true;
-
-            if (this.playerService.inBattle) {
-                requestAnimationFrame(moveMap);
-                return; // ❌ Không cho di chuyển nếu đang chiến đấu
-            }
 
             if (this.playerService.inBattle) {
                 requestAnimationFrame(moveMap);
@@ -592,6 +599,9 @@ export class MapService {
 
             if (chance < battleChance) {
                 console.log('Tiến vào trận chiến!');
+                audio.Map.stop();
+                audio.initBattle.play();
+                audio.battle.play();
                 this.playerService.inBattle = true;
                 this.playerService.stopAnimation();
                 if (this.battleService)

@@ -29,6 +29,7 @@ async function initGame() {
         const mapService = new MapService(app, playerService);
         mapService.battleService = battleService;
         const foregroundMap = await mapService.loadForegroundMap();
+        audio.Map.play();
 
         try {
             // Load player

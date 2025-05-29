@@ -6,7 +6,9 @@ export class BattleEffectService {
 
     // Heal effect
     async playHealEffect(monster, isPlayer = true, battleOverlay) {
-        const texture = await PIXI.Assets.load('./Player_Pokemon/Effect/healing.png');
+        const texture = await PIXI.Assets.load(
+            './Player_Pokemon/Effect/healing.png'
+        );
         const sprite = new PIXI.Sprite(texture);
 
         sprite.anchor.set(0.5);
@@ -24,7 +26,7 @@ export class BattleEffectService {
         const totalBlinks = 12;
         let blinkCount = 0;
 
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const interval = setInterval(() => {
                 sprite.alpha = sprite.alpha === 1 ? 0.3 : 1;
                 sprite.scale.set(sprite.scale.x + scaleStep);
@@ -41,6 +43,7 @@ export class BattleEffectService {
 
     // Explosion effect (tùy loại: 'player' hoặc 'enemy')
     async playExplosionEffect(x, y, battleOverlay, type = 'player') {
+        audio.initFireball.play();
         // 🔁 Phân nhánh ảnh và cấu hình từng loại
         let texturePath, frameWidth, frameHeight, numFrames;
 
@@ -64,8 +67,8 @@ export class BattleEffectService {
         const numColumns = Math.floor(baseTexture.width / frameWidth);
 
         for (let i = 0; i < numFrames; i++) {
-            const col = i % numColumns;                    // cột hiện tại
-            const row = Math.floor(i / numColumns);        // dòng hiện tại
+            const col = i % numColumns; // cột hiện tại
+            const row = Math.floor(i / numColumns); // dòng hiện tại
 
             const rect = new PIXI.Rectangle(
                 col * frameWidth,
@@ -74,7 +77,10 @@ export class BattleEffectService {
                 frameHeight
             );
 
-            const frameTexture = new PIXI.Texture({ source: baseTexture, frame: rect });
+            const frameTexture = new PIXI.Texture({
+                source: baseTexture,
+                frame: rect
+            });
             frames.push(frameTexture);
         }
 
@@ -87,7 +93,7 @@ export class BattleEffectService {
 
         battleOverlay.addChild(explosion);
 
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             explosion.onComplete = () => {
                 battleOverlay.removeChild(explosion);
                 explosion.destroy();
@@ -98,7 +104,16 @@ export class BattleEffectService {
     }
 
     // Attack effect
-    async playAttackEffect({ from, to, texturePath, frameSize, numFrames, battleOverlay, attackerType = 'player' }) {
+    async playAttackEffect({
+        from,
+        to,
+        texturePath,
+        frameSize,
+        numFrames,
+        battleOverlay,
+        attackerType = 'player'
+    }) {
+        audio.fireball.play();
         const texture = await PIXI.Assets.load(texturePath);
         const baseTexture = texture.baseTexture;
 
@@ -107,8 +122,16 @@ export class BattleEffectService {
         const frameHeight = frameSize.height;
 
         for (let i = 0; i < numFrames; i++) {
-            const rect = new PIXI.Rectangle(i * frameWidth / numFrames, 0, frameWidth / numFrames, frameHeight);
-            const frameTexture = new PIXI.Texture({ source: baseTexture, frame: rect });
+            const rect = new PIXI.Rectangle(
+                (i * frameWidth) / numFrames,
+                0,
+                frameWidth / numFrames,
+                frameHeight
+            );
+            const frameTexture = new PIXI.Texture({
+                source: baseTexture,
+                frame: rect
+            });
             frames.push(frameTexture);
         }
 
@@ -131,8 +154,8 @@ export class BattleEffectService {
         const duration = 1000;
         const startTime = performance.now();
 
-        return new Promise((resolve) => {
-            const animate = (now) => {
+        return new Promise(resolve => {
+            const animate = now => {
                 const t = Math.min((now - startTime) / duration, 1);
                 sprite.x = startX + (targetX - startX) * t;
                 sprite.y = startY + (targetY - startY) * t;
@@ -142,7 +165,12 @@ export class BattleEffectService {
                 } else {
                     battleOverlay.removeChild(sprite);
                     sprite.destroy();
-                    this.playExplosionEffect(targetX, targetY, battleOverlay, attackerType).then(resolve);
+                    this.playExplosionEffect(
+                        targetX,
+                        targetY,
+                        battleOverlay,
+                        attackerType
+                    ).then(resolve);
                 }
             };
             requestAnimationFrame(animate);
@@ -156,7 +184,7 @@ export class BattleEffectService {
         const interval = 100;
         let count = 0;
 
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const blink = setInterval(() => {
                 barSprite.alpha = barSprite.alpha === 1 ? 0.3 : 1;
                 count++;
@@ -171,11 +199,11 @@ export class BattleEffectService {
 
     // Hiệu ứng chuyển cảnh khi bắt đầu battle
     async transitionIn(stage) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const duration = 600;
             const start = performance.now();
 
-            const animate = (now) => {
+            const animate = now => {
                 const t = Math.min((now - start) / duration, 1);
                 stage.alpha = 1 - 0.8 * t;
 
@@ -194,11 +222,11 @@ export class BattleEffectService {
     async fadeInScene(scene) {
         scene.alpha = 0;
 
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const duration = 500;
             const start = performance.now();
 
-            const animate = (now) => {
+            const animate = now => {
                 const t = Math.min((now - start) / duration, 1);
                 scene.alpha = t;
 
@@ -217,7 +245,9 @@ export class BattleEffectService {
     // Hiệu ứng lên cấp (Level Up)
     async playLevelUpEffect(monster, battleOverlay) {
         // Load assets
-        const texture = await PIXI.Assets.load('./Player_Pokemon/Effect/level_up.png');
+        const texture = await PIXI.Assets.load(
+            './Player_Pokemon/Effect/level_up.png'
+        );
         const baseTexture = texture.baseTexture;
 
         // Thiết lập kích thước
@@ -227,8 +257,16 @@ export class BattleEffectService {
 
         const frames = [];
         for (let i = 0; i < numFrames; i++) {
-            const rect = new PIXI.Rectangle(i * frameWidth, 0, frameWidth, frameHeight);
-            const frameTexture = new PIXI.Texture({ source: baseTexture, frame: rect });
+            const rect = new PIXI.Rectangle(
+                i * frameWidth,
+                0,
+                frameWidth,
+                frameHeight
+            );
+            const frameTexture = new PIXI.Texture({
+                source: baseTexture,
+                frame: rect
+            });
             frames.push(frameTexture);
         }
 
@@ -246,11 +284,11 @@ export class BattleEffectService {
         battleOverlay.addChild(levelUpSprite);
         levelUpSprite.play();
 
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const duration = 1500;
             const startTime = performance.now();
 
-            const animate = (now) => {
+            const animate = now => {
                 const t = Math.min((now - startTime) / duration, 1);
 
                 // Nhấp nháy (alpha)

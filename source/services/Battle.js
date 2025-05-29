@@ -425,7 +425,6 @@ export class BattleService {
     //     document.body.appendChild(container);
     // }
 
-
     async addBattleControls() {
         const controlBar = document.getElementById('battleControlBar');
         const attackBtn = document.getElementById('attackBtn');
@@ -437,11 +436,20 @@ export class BattleService {
         await this.updateArrowTarget(this.playerMonster);
 
         attackBtn.onclick = async () => {
-            if (!this.enemyMonster || this.turnLocked || this.currentTurn !== 'player') return;
+            if (
+                !this.enemyMonster ||
+                this.turnLocked ||
+                this.currentTurn !== 'player'
+            )
+                return;
 
             this.turnLocked = true;
 
-            await this.advanceAndAttack(this.playerMonster, this.enemyMonster, 'player');
+            await this.advanceAndAttack(
+                this.playerMonster,
+                this.enemyMonster,
+                'player'
+            );
 
             if (this.enemyMonster.hp <= 0) {
                 await this.knockOutMonster(this.enemyMonster);
@@ -459,11 +467,18 @@ export class BattleService {
             this.turnLocked = true;
             const maxHp = this.playerMonster.maxHp || 100;
             const healAmount = 20 + this.playerMonster.level * 10;
-            this.playerMonster.hp = Math.min(this.playerMonster.hp + healAmount, maxHp);
+            this.playerMonster.hp = Math.min(
+                this.playerMonster.hp + healAmount,
+                maxHp
+            );
 
             this.updateHpBar(this.playerMonster, this.playerHpBar);
             this.updateMonsterInfo(this.playerMonster, false);
-            await this.effectService.playHealEffect(this.playerMonster, true, this.battleOverlay);
+            await this.effectService.playHealEffect(
+                this.playerMonster,
+                true,
+                this.battleOverlay
+            );
 
             setTimeout(() => this.enemyTurn(), 700);
         };
@@ -516,7 +531,9 @@ export class BattleService {
 
     // Tạo thanh HP
     async createHpBar(monster, isEnemy = false) {
-        const texture = await PIXI.Assets.load('./Player_Pokemon/Effect/hp.png');
+        const texture = await PIXI.Assets.load(
+            './Player_Pokemon/Effect/hp.png'
+        );
         const baseTexture = texture.baseTexture;
 
         const totalFrames = 4;
@@ -565,7 +582,9 @@ export class BattleService {
 
     // Cập nhật thanh HP
     async updateHpBar(monster, barSprite) {
-        const texture = await PIXI.Assets.load('./Player_Pokemon/Effect/hp.png');
+        const texture = await PIXI.Assets.load(
+            './Player_Pokemon/Effect/hp.png'
+        );
         const baseTexture = texture.baseTexture;
 
         const totalFrames = 4;
@@ -839,7 +858,7 @@ export class BattleService {
 
         let start = performance.now();
 
-        const animate = (now) => {
+        const animate = now => {
             const t = Math.min((now - start) / 500, 1);
             sprite.scale.set(0.1 + t * 0.5);
             sprite.alpha = t;
@@ -849,7 +868,7 @@ export class BattleService {
             } else {
                 setTimeout(() => {
                     this.endBattle();
-                }, 1500);
+                }, 3000);
             }
         };
 
@@ -888,5 +907,8 @@ export class BattleService {
         this.stopArrowTracking();
 
         this.hideMonsterInfoBoxes();
+        audio.initBattle.stop();
+        audio.battle.stop();
+        audio.Map.play();
     }
 }
