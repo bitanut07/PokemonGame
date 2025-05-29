@@ -1,7 +1,7 @@
 const audio = {
     Map: new Howl({
         src: 'Audio/map.wav',
-        volume: 0.1,
+        volume: 0.3,
         loop: true
     }),
     Enemy: new Howl({
@@ -18,7 +18,7 @@ const audio = {
     }),
     victory: new Howl({
         src: 'Audio/victory.wav',
-        volume: 0.1
+        volume: 0.7
     }),
     fireball: new Howl({
         src: 'Audio/fireballHit.wav',

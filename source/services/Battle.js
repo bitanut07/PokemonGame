@@ -841,6 +841,11 @@ export class BattleService {
                 ? './Player_Pokemon/Background/victory.png'
                 : './Player_Pokemon/Background/defeat.png';
 
+        if (type === 'victory') {
+            audio.victory.play();
+        }
+        audio.initBattle.stop();
+        audio.battle.stop();
         // Load ảnh banner phù hợp
         const texture = await PIXI.Assets.load(texturePath);
         const sprite = new PIXI.Sprite(texture);
